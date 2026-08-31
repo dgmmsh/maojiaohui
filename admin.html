@@ -589,6 +589,207 @@
       padding-bottom: 0.3rem;
       border-bottom: 1px dashed var(--rule);
     }
+
+    /* ---- 发布设置 Tab ---- */
+    .publish-wrap { padding: 0.8rem 1rem 1rem; }
+
+    .publish-group {
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 0.9rem 0.9rem;
+      margin-bottom: 0.8rem;
+    }
+    .publish-group h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .publish-group h4::before {
+      content: "";
+      width: 3px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* Token 输入框带眼睛按钮 */
+    .token-input-wrap {
+      position: relative;
+    }
+    .token-input-wrap input {
+      padding-right: 42px;
+    }
+    .token-toggle-btn {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+    .token-toggle-btn:active {
+      background: var(--bg2);
+    }
+
+    /* 保存设置按钮 */
+    .save-config-btn {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--ink);
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 0.3rem;
+    }
+    .save-config-btn:active { opacity: 0.85; }
+
+    /* 发布按钮组 */
+    .publish-btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    .publish-btn {
+      padding: 0.75rem 0.5rem;
+      border-radius: 8px;
+      border: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      line-height: 1.3;
+      transition: all 0.2s;
+    }
+    .publish-btn .btn-icon { font-size: 1.3rem; }
+    .publish-btn .btn-label { font-size: 0.78rem; }
+    .publish-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .publish-btn-data {
+      background: linear-gradient(135deg, #2e7d52, #3fa56e);
+      color: #fff;
+    }
+    .publish-btn-config {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: #fff;
+    }
+    .publish-btn-all {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .publish-btn-all:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .publish-btn-all .btn-icon { font-size: 1.2rem; }
+
+    /* 发布状态提示 */
+    .publish-status {
+      margin-top: 0.7rem;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      display: none;
+    }
+    .publish-status.success {
+      display: block;
+      background: #e8f5e9;
+      color: var(--success);
+      border: 1px solid #a5d6a7;
+    }
+    .publish-status.error {
+      display: block;
+      background: #ffebee;
+      color: var(--danger);
+      border: 1px solid #ef9a9a;
+    }
+
+    /* 折叠说明面板 */
+    .collapse-panel {
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      margin-bottom: 0.8rem;
+      overflow: hidden;
+    }
+    .collapse-header {
+      padding: 0.7rem 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: var(--bg);
+      border-bottom: 1px solid var(--rule);
+    }
+    .collapse-header .arrow {
+      transition: transform 0.2s;
+      font-size: 0.75rem;
+    }
+    .collapse-panel.open .collapse-header .arrow {
+      transform: rotate(180deg);
+    }
+    .collapse-body {
+      display: none;
+      padding: 0.8rem 0.9rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .collapse-panel.open .collapse-body {
+      display: block;
+    }
+    .collapse-body a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .collapse-body code {
+      background: var(--bg2);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 0.75rem;
+    }
+    .collapse-body .tip {
+      margin-top: 0.5rem;
+      padding: 0.5rem 0.7rem;
+      background: var(--gold-soft);
+      border-radius: 5px;
+      color: var(--warn-text);
+      font-size: 0.76rem;
+    }
   </style>
 </head>
 <body>
@@ -629,6 +830,7 @@
     <div class="tabs">
       <div class="tab active" onclick="switchTab('booth')">🏪 商家管理</div>
       <div class="tab" onclick="switchTab('setting')">⚙️ 站点设置</div>
+      <div class="tab" onclick="switchTab('publish')">🚀 发布设置</div>
     </div>
 
     <div id="tabBooth" class="tab-panel active">
@@ -702,6 +904,82 @@
         ① 可修改主页标题、横幅文字、统计数字、分类导航、底部按钮等<br/>
         ② 主题色可通过取色器自定义<br/>
         ③ 横幅背景支持手机拍照上传或相册选图
+      </div>
+    </div>
+
+    <!-- ===== 发布设置 Tab ===== -->
+    <div id="tabPublish" class="tab-panel">
+      <div class="publish-wrap">
+
+        <!-- GitHub 仓库配置 -->
+        <div class="publish-group">
+          <h4>🔧 GitHub 仓库配置</h4>
+          <div class="form-group">
+            <label>GitHub 用户名</label>
+            <input type="text" id="gh_owner" placeholder="比如：dgmmsh" />
+          </div>
+          <div class="form-group">
+            <label>仓库名称</label>
+            <input type="text" id="gh_repo" placeholder="比如：maojiaohui" />
+          </div>
+          <div class="form-group">
+            <label>分支名称</label>
+            <input type="text" id="gh_branch" placeholder="main" value="main" />
+          </div>
+          <div class="form-group">
+            <label>GitHub Token</label>
+            <div class="token-input-wrap">
+              <input type="password" id="gh_token" placeholder="ghp_xxxxxxxxxxxx" />
+              <button type="button" class="token-toggle-btn" onclick="toggleTokenVisibility()" id="tokenToggleBtn" title="显示/隐藏">👁️</button>
+            </div>
+          </div>
+          <button class="save-config-btn" onclick="saveGithubConfigFromForm()">💾 保存设置</button>
+        </div>
+
+        <!-- 一键发布 -->
+        <div class="publish-group">
+          <h4>🚀 一键发布上线</h4>
+          <div class="publish-btn-row">
+            <button class="publish-btn publish-btn-data" id="btnPublishData" onclick="publishData()">
+              <span class="btn-icon">🚀</span>
+              <span class="btn-label">发布商家数据</span>
+            </button>
+            <button class="publish-btn publish-btn-config" id="btnPublishConfig" onclick="publishConfig()">
+              <span class="btn-icon">⚙️</span>
+              <span class="btn-label">发布站点配置</span>
+            </button>
+          </div>
+          <button class="publish-btn-all" id="btnPublishAll" onclick="publishAll()">
+            <span class="btn-icon">🎉</span>
+            <span>全部发布（数据 + 配置）</span>
+          </button>
+          <div class="publish-status" id="publishStatus"></div>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="collapse-panel" id="helpPanel">
+          <div class="collapse-header" onclick="toggleHelpPanel()">
+            <span>📖 使用说明</span>
+            <span class="arrow">▼</span>
+          </div>
+          <div class="collapse-body">
+            <p><b>1. 如何获取 GitHub Token？</b></p>
+            <p>① 前往 <a href="https://github.com/settings/tokens?type=beta" target="_blank">GitHub Token 设置页</a></p>
+            <p>② 点击「Generate new token」</p>
+            <p>③ Note 填写「茂交会发布」，Expiration 选 90 天</p>
+            <p>④ Repository access 选择「Only select repositories」并选中你的仓库</p>
+            <p>⑤ Permissions → Repository permissions → Contents 设为「Read and write」</p>
+            <p>⑥ 点击底部「Generate token」生成，复制 token 填入上方</p>
+            <div class="tip">
+              🔒 <b>安全提示：</b>Token 仅保存在您本地浏览器的 localStorage 中，不会上传到任何服务器。删除浏览器数据会清除配置，请妥善保管。
+            </div>
+            <p style="margin-top:0.6rem;"><b>2. 发布后多久生效？</b></p>
+            <p>发布成功后，GitHub Pages 约 30 秒 ~ 1 分钟后自动更新，刷新页面即可看到最新内容。</p>
+            <p style="margin-top:0.6rem;"><b>3. 发布失败怎么办？</b></p>
+            <p>请检查：① 用户名/仓库名/分支是否正确 ② Token 是否有效且有权限 ③ 网络是否正常</p>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1713,11 +1991,38 @@ var currentTab = 'booth';
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(function(t, i) {
-    t.classList.toggle('active', (i === 0 && tab === 'booth') || (i === 1 && tab === 'setting'));
+    t.classList.toggle('active',
+      (i === 0 && tab === 'booth') ||
+      (i === 1 && tab === 'setting') ||
+      (i === 2 && tab === 'publish')
+    );
   });
   document.getElementById('tabBooth').classList.toggle('active', tab === 'booth');
   document.getElementById('tabSetting').classList.toggle('active', tab === 'setting');
+  document.getElementById('tabPublish').classList.toggle('active', tab === 'publish');
   if (tab === 'setting') renderSiteSettings();
+  if (tab === 'publish') {
+    loadGithubConfigToForm();
+    updateBottomBarForPublish();
+  } else {
+    updateBottomBarForNormal();
+  }
+}
+
+function updateBottomBarForPublish() {
+  var btns = document.querySelectorAll('.bottom-bar .btn');
+  if (btns.length >= 2) {
+    btns[0].style.display = 'none';
+    btns[1].style.display = 'none';
+  }
+}
+
+function updateBottomBarForNormal() {
+  var btns = document.querySelectorAll('.bottom-bar .btn');
+  if (btns.length >= 2) {
+    btns[0].style.display = '';
+    btns[1].style.display = '';
+  }
 }
 
 // ============= 站点设置 =============
@@ -2178,7 +2483,7 @@ function editCatEmoji(idx) {
 function handleBottomExport() {
   if (currentTab === 'booth') {
     exportData();
-  } else {
+  } else if (currentTab === 'setting') {
     exportSiteConfig();
   }
 }
@@ -2186,7 +2491,7 @@ function handleBottomExport() {
 function handleBottomReset() {
   if (currentTab === 'booth') {
     resetData();
-  } else {
+  } else if (currentTab === 'setting') {
     if (!confirm('确定恢复默认站点设置吗？')) return;
     siteCfg = getDefaultSiteConfig();
     saveSiteConfigLocal();
@@ -2213,6 +2518,313 @@ window.SITE_CONFIG = ${jsonStr};
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
   toast('✅ 配置已导出');
+}
+
+// ============= GitHub 发布功能 =============
+const GITHUB_CONFIG_KEY = 'maojiaohui_github_config';
+
+// 保存 GitHub 配置到 localStorage
+function saveGithubConfig(config) {
+  localStorage.setItem(GITHUB_CONFIG_KEY, JSON.stringify(config));
+}
+
+// 从 localStorage 读取 GitHub 配置
+function loadGithubConfig() {
+  var saved = localStorage.getItem(GITHUB_CONFIG_KEY);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch(e) {}
+  }
+  return { owner: '', repo: '', branch: 'main', token: '' };
+}
+
+// 加载配置到表单
+function loadGithubConfigToForm() {
+  var cfg = loadGithubConfig();
+  document.getElementById('gh_owner').value = cfg.owner || '';
+  document.getElementById('gh_repo').value = cfg.repo || '';
+  document.getElementById('gh_branch').value = cfg.branch || 'main';
+  document.getElementById('gh_token').value = cfg.token || '';
+}
+
+// 从表单保存配置
+function saveGithubConfigFromForm() {
+  var cfg = {
+    owner: document.getElementById('gh_owner').value.trim(),
+    repo: document.getElementById('gh_repo').value.trim(),
+    branch: document.getElementById('gh_branch').value.trim() || 'main',
+    token: document.getElementById('gh_token').value.trim()
+  };
+  if (!cfg.owner || !cfg.repo || !cfg.token) {
+    toast('请填写完整的 GitHub 配置');
+    return;
+  }
+  saveGithubConfig(cfg);
+  toast('✅ 设置已保存');
+}
+
+// 切换 Token 显示/隐藏
+function toggleTokenVisibility() {
+  var input = document.getElementById('gh_token');
+  var btn = document.getElementById('tokenToggleBtn');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '🙈';
+    btn.title = '隐藏';
+  } else {
+    input.type = 'password';
+    btn.textContent = '👁️';
+    btn.title = '显示';
+  }
+}
+
+// 切换帮助面板
+function toggleHelpPanel() {
+  var panel = document.getElementById('helpPanel');
+  panel.classList.toggle('open');
+}
+
+// UTF-8 字符串转 base64（支持中文）
+function utf8ToBase64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+// 检查 GitHub 配置是否完整
+function checkGithubConfig() {
+  var cfg = loadGithubConfig();
+  if (!cfg.owner || !cfg.repo || !cfg.branch || !cfg.token) {
+    return false;
+  }
+  return true;
+}
+
+// 获取文件 sha
+function getGithubFileSha(path) {
+  var cfg = loadGithubConfig();
+  var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + path + '?ref=' + cfg.branch;
+  return fetch(url, {
+    headers: {
+      'Authorization': 'token ' + cfg.token,
+      'Accept': 'application/vnd.github.v3+json'
+    }
+  }).then(function(res) {
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error('获取文件信息失败 (' + res.status + ')');
+    return res.json();
+  }).then(function(data) {
+    return data ? data.sha : null;
+  });
+}
+
+// 发布文件到 GitHub
+function publishGithubFile(path, content, message) {
+  var cfg = loadGithubConfig();
+  return getGithubFileSha(path).then(function(sha) {
+    var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + path;
+    var body = {
+      message: message,
+      content: utf8ToBase64(content),
+      branch: cfg.branch
+    };
+    if (sha) {
+      body.sha = sha;
+    }
+    return fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + cfg.token,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github.v3+json'
+      },
+      body: JSON.stringify(body)
+    }).then(function(res) {
+      if (!res.ok) {
+        return res.json().then(function(errData) {
+          var errMsg = errData.message || '发布失败 (' + res.status + ')';
+          throw new Error(errMsg);
+        }).catch(function(err) {
+          if (err.message && err.message.indexOf('发布失败') > -1) throw err;
+          throw new Error('发布失败 (' + res.status + ')');
+        });
+      }
+      return res.json();
+    });
+  });
+}
+
+// 生成 data.js 内容
+function generateDataJsContent() {
+  var jsonStr = JSON.stringify(currentData, null, 2);
+  return `// 第五届茂交会 · 云上展厅数据
+// 由后台管理发布，请勿手动修改格式
+// 最后更新：${new Date().toLocaleString('zh-CN')}
+
+window.BOOTH_DATA = ${jsonStr};
+
+// 品类配置
+window.CATEGORY_CONFIG = [
+  { key: "mooncake", name: "月饼食品", emoji: "🥮", bg: "bg-mooncake" },
+  { key: "fruit", name: "水果生鲜", emoji: "🍊", bg: "bg-fruit" },
+  { key: "wine", name: "酒水饮料", emoji: "🍶", bg: "bg-wine" },
+  { key: "agarwood", name: "沉香文化", emoji: "🪵", bg: "bg-agarwood" },
+  { key: "food", name: "餐饮美食", emoji: "🍜", bg: "bg-food" },
+  { key: "service", name: "生活服务", emoji: "☁️", bg: "bg-service" },
+  { key: "general", name: "综合", emoji: "🏪", bg: "bg-general" }
+];
+`;
+}
+
+// 生成 site-config.js 内容
+function generateConfigJsContent() {
+  var jsonStr = JSON.stringify(siteCfg, null, 2);
+  return `// 第五届茂交会 · 云上展厅 全站配置
+// 由后台管理发布，请勿手动修改格式
+// 最后更新：${new Date().toLocaleString('zh-CN')}
+
+window.SITE_CONFIG = ${jsonStr};
+`;
+}
+
+// 设置发布按钮禁用状态
+function setPublishButtonsDisabled(disabled) {
+  document.getElementById('btnPublishData').disabled = disabled;
+  document.getElementById('btnPublishConfig').disabled = disabled;
+  document.getElementById('btnPublishAll').disabled = disabled;
+}
+
+// 更新按钮文字（loading 状态）
+function setButtonLoading(btnId, loading, originalText) {
+  var btn = document.getElementById(btnId);
+  if (loading) {
+    btn.dataset.origText = btn.innerHTML;
+    btn.innerHTML = '<span class="btn-icon">⏳</span><span class="btn-label">发布中...</span>';
+  } else {
+    if (btn.dataset.origText) {
+      btn.innerHTML = btn.dataset.origText;
+    }
+  }
+}
+
+// 显示发布状态
+function showPublishStatus(type, msg) {
+  var statusEl = document.getElementById('publishStatus');
+  statusEl.className = 'publish-status ' + type;
+  statusEl.innerHTML = msg;
+}
+
+// 清除发布状态
+function clearPublishStatus() {
+  var statusEl = document.getElementById('publishStatus');
+  statusEl.className = 'publish-status';
+  statusEl.innerHTML = '';
+}
+
+// 发布商家数据
+function publishData() {
+  if (!checkGithubConfig()) {
+    toast('请先填写完整的 GitHub 配置');
+    return;
+  }
+  if (currentData.length === 0) {
+    toast('没有数据可发布');
+    return;
+  }
+
+  clearPublishStatus();
+  setPublishButtonsDisabled(true);
+  setButtonLoading('btnPublishData', true);
+
+  var content = generateDataJsContent();
+  publishGithubFile('assets/data.js', content, '后台更新：商家数据')
+    .then(function() {
+      showPublishStatus('success', '✅ 商家数据发布成功！约30秒后线上更新');
+      toast('✅ 数据发布成功');
+    })
+    .catch(function(err) {
+      showPublishStatus('error', '❌ 发布失败：' + err.message);
+      toast('发布失败：' + err.message);
+    })
+    .finally(function() {
+      setPublishButtonsDisabled(false);
+      setButtonLoading('btnPublishData', false);
+    });
+}
+
+// 发布站点配置
+function publishConfig() {
+  if (!checkGithubConfig()) {
+    toast('请先填写完整的 GitHub 配置');
+    return;
+  }
+  if (!siteCfg) {
+    toast('站点配置未加载');
+    return;
+  }
+
+  clearPublishStatus();
+  setPublishButtonsDisabled(true);
+  setButtonLoading('btnPublishConfig', true);
+
+  var content = generateConfigJsContent();
+  publishGithubFile('assets/site-config.js', content, '后台更新：站点配置')
+    .then(function() {
+      showPublishStatus('success', '✅ 站点配置发布成功！约30秒后线上更新');
+      toast('✅ 配置发布成功');
+    })
+    .catch(function(err) {
+      showPublishStatus('error', '❌ 发布失败：' + err.message);
+      toast('发布失败：' + err.message);
+    })
+    .finally(function() {
+      setPublishButtonsDisabled(false);
+      setButtonLoading('btnPublishConfig', false);
+    });
+}
+
+// 全部发布
+function publishAll() {
+  if (!checkGithubConfig()) {
+    toast('请先填写完整的 GitHub 配置');
+    return;
+  }
+  if (currentData.length === 0) {
+    toast('没有数据可发布');
+    return;
+  }
+  if (!siteCfg) {
+    toast('站点配置未加载');
+    return;
+  }
+
+  clearPublishStatus();
+  setPublishButtonsDisabled(true);
+  var allBtn = document.getElementById('btnPublishAll');
+  allBtn.dataset.origText = allBtn.innerHTML;
+  allBtn.innerHTML = '<span class="btn-icon">⏳</span><span>正在发布数据...</span>';
+
+  // 先发布数据
+  var dataContent = generateDataJsContent();
+  publishGithubFile('assets/data.js', dataContent, '后台更新：商家数据')
+    .then(function() {
+      allBtn.innerHTML = '<span class="btn-icon">⏳</span><span>正在发布配置...</span>';
+      var configContent = generateConfigJsContent();
+      return publishGithubFile('assets/site-config.js', configContent, '后台更新：站点配置');
+    })
+    .then(function() {
+      showPublishStatus('success', '🎉 全部发布成功！数据和配置已上线，约30秒后线上更新');
+      toast('🎉 全部发布成功');
+    })
+    .catch(function(err) {
+      showPublishStatus('error', '❌ 发布失败：' + err.message);
+      toast('发布失败：' + err.message);
+    })
+    .finally(function() {
+      setPublishButtonsDisabled(false);
+      if (allBtn.dataset.origText) {
+        allBtn.innerHTML = allBtn.dataset.origText;
+      }
+    });
 }
 
 // 检查登录状态
