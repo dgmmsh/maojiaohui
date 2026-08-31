@@ -366,8 +366,15 @@
       object-fit: cover;
     }
     .img-preview .placeholder {
-      font-size: 2.5rem;
+      font-size: 2rem;
       opacity: 0.5;
+    }
+    #photoPreview .placeholder {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
     }
     .img-upload-btns {
       display: flex;
@@ -468,31 +475,52 @@
     .specs-list { margin-top: 0.3rem; }
     .spec-item {
       display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 0.4rem;
+      grid-template-columns: 1fr 2fr auto;
+      gap: 0.35rem;
       align-items: start;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.3rem;
     }
     .spec-item input {
       width: 100%;
-      padding: 0.45rem 0.6rem;
+      padding: 0.4rem 0.55rem;
       border: 1px solid var(--rule);
       border-radius: 6px;
       font-size: 0.82rem;
       background: var(--card);
     }
     .spec-item .spec-del {
-      width: 32px;
-      height: 32px;
+      width: 26px;
+      height: 26px;
       border: 1px solid var(--rule);
       border-radius: 6px;
       background: var(--card);
       color: var(--danger);
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0;
+      line-height: 1;
+    }
+    .spec-quick-add {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      margin-top: 0.3rem;
+    }
+    .spec-quick-add button {
+      padding: 0.25rem 0.5rem;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      background: var(--card);
+      font-size: 0.72rem;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .spec-quick-add button:active {
+      border-color: var(--accent);
+      color: var(--accent);
     }
     .specs-add-btn {
       width: 100%;
@@ -800,7 +828,7 @@
       <a class="back" href="index.html">←</a>
       <div class="title">
         后台管理
-        <small>茂交会云上展厅</small>
+        <small>茂交会云上展厅 · v2.0</small>
       </div>
     </header>
     <div class="login-wrap">
@@ -1126,13 +1154,14 @@ function chooseImgOption(type) {
   }
   input.setAttribute('accept', 'image/*');
   input.click();
-  closeImgOption();
+  // 不在这里调用 closeImgOption()——等用户选完图再关，否则 imgUploadContext 会被提前清空
 }
 
 function handleImgUpload(event) {
   var file = event.target.files[0];
   if (!file || !imgUploadContext) {
     event.target.value = '';
+    closeImgOption();
     return;
   }
 
@@ -1153,6 +1182,7 @@ function handleImgUpload(event) {
     })
     .finally(function() {
       event.target.value = '';
+      closeImgOption(); // 上传完成后关闭选项弹窗
     });
 }
 
@@ -1398,11 +1428,10 @@ function renderForm(data, title) {
         <div class="img-preview" id="photoPreview">
           ${editingPhoto
             ? '<img src="' + editingPhoto + '" alt="封面图" />'
-            : '<div class="placeholder">🏪</div>'}
+            : '<div class="placeholder">📷 暂无图片</div>'}
         </div>
         <div class="img-upload-btns">
-          <button type="button" onclick="uploadBoothPhoto()">📷 拍照</button>
-          <button type="button" onclick="uploadBoothPhotoAlbum()">🖼️ 相册</button>
+          <button type="button" onclick="uploadBoothPhoto()">📷 上传图片</button>
           ${editingPhoto ? '<button type="button" class="del-btn" onclick="deleteBoothPhoto()">删除</button>' : ''}
         </div>
       </div>
@@ -1456,8 +1485,7 @@ function renderForm(data, title) {
             : '<div class="placeholder">📱</div>'}
         </div>
         <div class="img-upload-btns" style="max-width:180px;">
-          <button type="button" onclick="uploadWechatQr()">📷 拍照</button>
-          <button type="button" onclick="uploadWechatQrAlbum()">🖼️ 相册</button>
+          <button type="button" onclick="uploadWechatQr()">📷 上传图片</button>
           ${editingWechatQr ? '<button type="button" class="del-btn" onclick="deleteWechatQr()">删除</button>' : ''}
         </div>
       </div>
@@ -1473,8 +1501,7 @@ function renderForm(data, title) {
             : '<div class="placeholder">💰</div>'}
         </div>
         <div class="img-upload-btns" style="max-width:180px;">
-          <button type="button" onclick="uploadPayQr()">📷 拍照</button>
-          <button type="button" onclick="uploadPayQrAlbum()">🖼️ 相册</button>
+          <button type="button" onclick="uploadPayQr()">📷 上传图片</button>
           ${editingPayQr ? '<button type="button" class="del-btn" onclick="deletePayQr()">删除</button>' : ''}
         </div>
       </div>
@@ -1508,22 +1535,6 @@ function uploadBoothPhoto() {
   });
 }
 
-function uploadBoothPhotoAlbum() {
-  var input = document.getElementById('imgFileInput');
-  input.removeAttribute('capture');
-  input.setAttribute('accept', 'image/*');
-  imgUploadContext = {
-    maxWidth: 600,
-    quality: 0.8,
-    callback: function(base64) {
-      editingPhoto = base64;
-      updatePhotoPreview();
-      updatePhotoBtns();
-    }
-  };
-  input.click();
-}
-
 function deleteBoothPhoto() {
   if (!confirm('确定删除封面图吗？')) return;
   editingPhoto = '';
@@ -1537,7 +1548,7 @@ function updatePhotoPreview() {
   if (editingPhoto) {
     el.innerHTML = '<img src="' + editingPhoto + '" alt="封面图" />';
   } else {
-    el.innerHTML = '<div class="placeholder">🏪</div>';
+    el.innerHTML = '<div class="placeholder">📷 暂无图片</div>';
   }
 }
 
@@ -1572,22 +1583,6 @@ function uploadWechatQr() {
   });
 }
 
-function uploadWechatQrAlbum() {
-  var input = document.getElementById('imgFileInput');
-  input.removeAttribute('capture');
-  input.setAttribute('accept', 'image/*');
-  imgUploadContext = {
-    maxWidth: 600,
-    quality: 0.8,
-    callback: function(base64) {
-      editingWechatQr = base64;
-      updateQrPreview('wechatQrPreview', 'wechat', editingWechatQr, '📱');
-      updateQrBtns('wechatQrPreview', 'wechat');
-    }
-  };
-  input.click();
-}
-
 function deleteWechatQr() {
   if (!confirm('确定删除微信二维码吗？')) return;
   editingWechatQr = '';
@@ -1606,22 +1601,6 @@ function uploadPayQr() {
       updateQrBtns('payQrPreview', 'pay');
     }
   });
-}
-
-function uploadPayQrAlbum() {
-  var input = document.getElementById('imgFileInput');
-  input.removeAttribute('capture');
-  input.setAttribute('accept', 'image/*');
-  imgUploadContext = {
-    maxWidth: 600,
-    quality: 0.8,
-    callback: function(base64) {
-      editingPayQr = base64;
-      updateQrPreview('payQrPreview', 'pay', editingPayQr, '💰');
-      updateQrBtns('payQrPreview', 'pay');
-    }
-  };
-  input.click();
 }
 
 function deletePayQr() {
@@ -1736,6 +1715,13 @@ function renderProductList() {
             '</div>';
           }).join('')}
         </div>
+        <div class="spec-quick-add">
+          <button type="button" onclick="addQuickSpec(${i}, '规格')">+ 规格</button>
+          <button type="button" onclick="addQuickSpec(${i}, '产地')">+ 产地</button>
+          <button type="button" onclick="addQuickSpec(${i}, '保质期')">+ 保质期</button>
+          <button type="button" onclick="addQuickSpec(${i}, '净含量')">+ 净含量</button>
+          <button type="button" onclick="addQuickSpec(${i}, '储存方式')">+ 储存方式</button>
+        </div>
         <button type="button" class="specs-add-btn" onclick="addProductSpec(${i})">+ 添加规格参数</button>
       </div>
     </div>
@@ -1810,6 +1796,14 @@ function addProductSpec(productIdx) {
     editingProducts[productIdx].specs = [];
   }
   editingProducts[productIdx].specs.push({ label: '', value: '' });
+  renderProductList();
+}
+
+function addQuickSpec(productIdx, label) {
+  if (!editingProducts[productIdx].specs) {
+    editingProducts[productIdx].specs = [];
+  }
+  editingProducts[productIdx].specs.push({ label: label, value: '' });
   renderProductList();
 }
 
@@ -2201,8 +2195,7 @@ function renderSiteSettings() {
             ${heroBgPreview}
           </div>
           <div class="img-upload-btns">
-            <button type="button" onclick="uploadHeroBg()">📷 拍照</button>
-            <button type="button" onclick="uploadHeroBgAlbum()">🖼️ 相册</button>
+            <button type="button" onclick="uploadHeroBg()">📷 上传图片</button>
             ${editingHeroBg ? '<button type="button" class="del-btn" onclick="deleteHeroBg()">删除</button>' : ''}
           </div>
         </div>
@@ -2312,22 +2305,6 @@ function uploadHeroBg() {
       updateHeroBgBtns();
     }
   });
-}
-
-function uploadHeroBgAlbum() {
-  var input = document.getElementById('imgFileInput');
-  input.removeAttribute('capture');
-  input.setAttribute('accept', 'image/*');
-  imgUploadContext = {
-    maxWidth: 800,
-    quality: 0.8,
-    callback: function(base64) {
-      editingHeroBg = base64;
-      updateHeroBgPreview();
-      updateHeroBgBtns();
-    }
-  };
-  input.click();
 }
 
 function deleteHeroBg() {
