@@ -1,6 +1,6 @@
 // 第五届茂交会 · 云上展厅数据
 // 由后台管理发布，请勿手动修改格式
-// 最后更新：2026/9/1 05:04:33
+// 最后更新：2026/9/1 05:05:42
 
 window.BOOTH_DATA = [
   {
@@ -262,8 +262,8 @@ window.BOOTH_DATA = [
         "specs": []
       }
     ],
-    "contactName": "肖总",
-    "phone": "135****3333",
+    "contactName": "肖铭棠",
+    "phone": "13427806088",
     "contactName2": "",
     "phone2": "",
     "wechatId": "xiaomingtang_drink",
