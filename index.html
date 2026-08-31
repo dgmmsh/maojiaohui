@@ -25,12 +25,12 @@
       --max: 520px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html { font-size: 14px; }
+    html { font-size: 16px; }
     body {
       font-family: var(--font);
       color: var(--ink);
       background: var(--bg);
-      line-height: 1.55;
+      line-height: 1.6;
       padding-bottom: 64px;
       max-width: var(--max);
       margin: 0 auto;
@@ -53,7 +53,7 @@
       color: #f0d99c; font-weight: 700; font-size: 0.85rem;
       flex-shrink: 0;
     }
-    .topbar .title { font-size: 0.95rem; font-weight: 700; flex: 1; }
+    .topbar .title { font-size: 1rem; font-weight: 700; flex: 1; }
     .topbar .title small { display: block; font-size: 0.68rem; color: var(--muted); font-weight: 400; }
     .topbar .search-btn {
       width: 32px; height: 32px; border-radius: 50%;
@@ -77,7 +77,7 @@
       background: rgba(240,217,156,0.2); border: 1px solid rgba(240,217,156,0.4);
       padding: 0.15rem 0.55rem; border-radius: 2px; margin-bottom: 0.5rem;
     }
-    .hero h1 { font-size: 1.45rem; font-weight: 700; line-height: 1.25; position: relative; }
+    .hero h1 { font-size: 1.6rem; font-weight: 700; line-height: 1.25; position: relative; }
     .hero h1 em { color: #f0c257; font-style: normal; }
     .hero p { font-size: 0.78rem; margin-top: 0.4rem; opacity: 0.88; position: relative; }
     .hero-stats {
@@ -86,7 +86,7 @@
     }
     .hero-stats .stat { text-align: center; border-right: 1px solid rgba(255,255,255,0.2); }
     .hero-stats .stat:last-child { border-right: none; }
-    .hero-stats .num { font-size: 1.25rem; font-weight: 700; color: #f0c257; line-height: 1; }
+    .hero-stats .num { font-size: 1.4rem; font-weight: 700; color: #f0c257; line-height: 1; }
     .hero-stats .lbl { font-size: 0.7rem; margin-top: 0.25rem; opacity: 0.85; }
 
     /* ---- Category Bar ---- */
@@ -99,7 +99,7 @@
     .cat-bar::-webkit-scrollbar { display: none; }
     .cat-chip {
       flex-shrink: 0; padding: 0.35rem 0.8rem; border-radius: 20px;
-      background: var(--bg2); font-size: 0.78rem; color: var(--muted);
+      background: var(--bg2); font-size: 0.82rem; color: var(--muted);
       border: 1px solid transparent; transition: all 0.2s;
     }
     .cat-chip.active {
@@ -112,7 +112,7 @@
       padding: 1rem 1rem 0.5rem;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .sec-title h2 { font-size: 1rem; font-weight: 700; }
+    .sec-title h2 { font-size: 1.05rem; font-weight: 700; }
     .sec-title h2::before {
       content: ""; display: inline-block; width: 3px; height: 14px;
       background: var(--accent); margin-right: 0.4rem; vertical-align: -2px; border-radius: 2px;
@@ -133,8 +133,21 @@
     .booth-img {
       width: 100%; aspect-ratio: 4/3;
       display: flex; align-items: center; justify-content: center;
-      font-size: 2.2rem; position: relative;
+      position: relative;
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+      background-color: var(--bg2);
     }
+    /* 图片占位符 */
+    .img-placeholder {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.3rem; color: var(--muted);
+      background: linear-gradient(135deg, #e8e4dc 0%, #d4cfc3 100%);
+      width: 100%; height: 100%;
+    }
+    .img-placeholder .ph-icon { font-size: 1.8rem; opacity: 0.6; }
+    .img-placeholder .ph-text { font-size: 0.7rem; opacity: 0.7; }
+    .booth-img .img-placeholder .ph-icon { font-size: 2.2rem; }
+    .booth-img .img-placeholder .ph-text { font-size: 0.75rem; }
     .booth-img .cat-badge {
       position: absolute; top: 0.4rem; left: 0.4rem;
       font-size: 0.6rem; padding: 0.1rem 0.4rem; border-radius: 3px;
@@ -146,8 +159,8 @@
       background: rgba(0,0,0,0.5); color: #fff; font-weight: 500;
     }
     .booth-info { padding: 0.55rem 0.6rem 0.65rem; }
-    .booth-name { font-size: 0.88rem; font-weight: 700; line-height: 1.3; margin-bottom: 0.2rem; }
-    .booth-desc { font-size: 0.7rem; color: var(--muted); line-height: 1.4; margin-bottom: 0.35rem;
+    .booth-name { font-size: 0.95rem; font-weight: 700; line-height: 1.3; margin-bottom: 0.2rem; }
+    .booth-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.4; margin-bottom: 0.35rem;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .booth-price {
       font-size: 0.72rem; color: var(--accent); font-weight: 600;
@@ -188,12 +201,15 @@
     .modal-hero {
       width: 100%; aspect-ratio: 16/9;
       display: flex; align-items: center; justify-content: center;
-      font-size: 3.5rem;
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+      background-color: var(--bg2);
     }
+    .modal-hero .img-placeholder .ph-icon { font-size: 3rem; }
+    .modal-hero .img-placeholder .ph-text { font-size: 0.85rem; }
     .modal-body { padding: 0 1rem 5rem; }
     .modal-section { margin-top: 1rem; }
     .modal-section h4 {
-      font-size: 0.9rem; font-weight: 700; margin-bottom: 0.6rem;
+      font-size: 0.95rem; font-weight: 700; margin-bottom: 0.6rem;
       display: flex; align-items: center; gap: 0.4rem;
     }
     .modal-section h4::before {
@@ -208,18 +224,86 @@
       border: 1px solid var(--rule);
     }
     .product-img {
-      width: 52px; height: 52px; border-radius: 6px; flex-shrink: 0;
+      width: 72px; height: 72px; border-radius: 8px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.6rem; background: var(--bg2);
+      background: var(--bg2);
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+      position: relative; cursor: pointer;
+      overflow: hidden;
     }
+    .product-img .img-placeholder .ph-icon { font-size: 1.4rem; }
+    .product-img .img-placeholder .ph-text { font-size: 0.58rem; }
+    .product-img .img-indicator {
+      position: absolute; bottom: 2px; right: 2px;
+      font-size: 0.55rem; background: rgba(0,0,0,0.6); color: #fff;
+      padding: 0 4px; border-radius: 8px; line-height: 1.4;
+    }
+    .product-img .img-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px; border-radius: 50%;
+      background: rgba(0,0,0,0.5); color: #fff;
+      display: none; align-items: center; justify-content: center;
+      font-size: 0.7rem; line-height: 1;
+    }
+    .product-img.has-multi .img-nav { display: flex; }
+    .product-img .img-nav.left { left: 2px; }
+    .product-img .img-nav.right { right: 2px; }
     .product-info { flex: 1; min-width: 0; }
-    .product-name { font-size: 0.82rem; font-weight: 600; line-height: 1.3; }
+    .product-name { font-size: 0.9rem; font-weight: 600; line-height: 1.3; }
     .product-desc { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
     .product-price {
       font-size: 0.82rem; color: var(--accent); font-weight: 700;
       margin-top: 0.25rem;
     }
     .product-price .unit { font-size: 0.65rem; font-weight: 400; color: var(--muted); margin-left: 0.2rem; }
+
+    /* ---- Contact Persons & QR Codes ---- */
+    .contact-persons {
+      display: flex; flex-direction: column; gap: 0.5rem;
+      margin-bottom: 0.8rem;
+    }
+    .contact-person {
+      background: var(--card); border-radius: 8px; padding: 0.65rem 0.8rem;
+      border: 1px solid var(--rule);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .contact-person .cp-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--accent-soft); color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0; font-weight: 700;
+    }
+    .contact-person .cp-info { flex: 1; min-width: 0; }
+    .contact-person .cp-name { font-size: 0.82rem; font-weight: 600; }
+    .contact-person .cp-phone { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
+    .contact-person .cp-call {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; flex-shrink: 0; text-decoration: none;
+    }
+
+    .qr-section {
+      display: flex; gap: 0.6rem; margin-top: 0.8rem;
+    }
+    .qr-item {
+      flex: 1; background: var(--card); border-radius: 10px;
+      border: 1px solid var(--rule); padding: 0.75rem 0.6rem 0.65rem;
+      text-align: center;
+    }
+    .qr-item .qr-title {
+      font-size: 0.78rem; font-weight: 600; color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .qr-img {
+      width: 100%; aspect-ratio: 1/1;
+      background: var(--bg2); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin-bottom: 0.45rem;
+      background-size: cover; background-position: center;
+    }
+    .qr-label { font-size: 0.68rem; color: var(--muted); font-weight: 400; line-height: 1.4; }
+    .qr-wechat-only .qr-item { flex: 0 0 auto; width: 60%; margin: 0 auto; }
 
     .contact-row {
       display: flex; gap: 0.6rem; margin-top: 0.5rem;
@@ -255,6 +339,135 @@
       font-size: 0.72rem; color: var(--muted); margin-top: 0.8rem;
     }
 
+    /* ---- Product Detail Modal ---- */
+    .product-modal-mask {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.5);
+      display: none; align-items: flex-end; justify-content: center;
+    }
+    .product-modal-mask.show { display: flex; animation: fadeIn 0.2s; }
+    .product-modal {
+      background: var(--bg); width: 100%; max-width: var(--max);
+      height: 88vh; border-radius: 16px 16px 0 0;
+      display: flex; flex-direction: column;
+      animation: slideUp 0.25s ease-out;
+      position: relative;
+    }
+    .product-modal-close {
+      position: absolute; top: 0.75rem; left: 0.75rem; z-index: 10;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(0,0,0,0.5); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; backdrop-filter: blur(4px);
+    }
+    .product-gallery {
+      width: 100%; aspect-ratio: 16/9;
+      position: relative; overflow: hidden;
+      background: var(--bg2); flex-shrink: 0;
+    }
+    .product-gallery-track {
+      display: flex; width: 100%; height: 100%;
+      transition: transform 0.3s ease;
+    }
+    .product-gallery-slide {
+      flex-shrink: 0; width: 100%; height: 100%;
+      background-size: cover; background-position: center; background-repeat: no-repeat;
+    }
+    .product-gallery .img-placeholder {
+      width: 100%; height: 100%;
+    }
+    .product-gallery .img-placeholder .ph-icon { font-size: 3rem; }
+    .product-gallery .img-placeholder .ph-text { font-size: 0.85rem; }
+    .gallery-indicator {
+      position: absolute; bottom: 0.6rem; right: 0.75rem;
+      font-size: 0.7rem; background: rgba(0,0,0,0.5); color: #fff;
+      padding: 0.15rem 0.55rem; border-radius: 10px;
+      backdrop-filter: blur(4px);
+    }
+    .gallery-nav {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(0,0,0,0.4); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; backdrop-filter: blur(4px);
+      z-index: 2;
+    }
+    .gallery-nav.prev { left: 0.5rem; }
+    .gallery-nav.next { right: 0.5rem; }
+
+    .product-modal-body {
+      flex: 1; overflow-y: auto;
+      padding: 0 1rem 5.5rem;
+    }
+    .product-title-row {
+      padding: 0.9rem 0 0.6rem;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .product-title { font-size: 1.15rem; font-weight: 700; line-height: 1.3; flex: 1; }
+    .product-price-big {
+      font-size: 1.4rem; font-weight: 800; color: var(--accent);
+      white-space: nowrap; line-height: 1.2;
+    }
+    .product-price-big .unit { font-size: 0.75rem; font-weight: 400; color: var(--muted); margin-left: 0.15rem; }
+    .product-short-desc {
+      font-size: 0.82rem; color: var(--muted); line-height: 1.5;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .product-section { margin-top: 1rem; }
+    .product-section h4 {
+      font-size: 0.95rem; font-weight: 700; margin-bottom: 0.6rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .product-section h4::before {
+      content: ""; width: 3px; height: 14px; background: var(--accent);
+      border-radius: 2px;
+    }
+    .product-detail-text {
+      font-size: 0.82rem; color: var(--ink); line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    .spec-list {
+      display: flex; flex-direction: column; gap: 0;
+      background: var(--card); border-radius: 8px;
+      border: 1px solid var(--rule);
+      overflow: hidden;
+    }
+    .spec-item {
+      display: flex; padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--rule);
+      font-size: 0.82rem;
+    }
+    .spec-item:last-child { border-bottom: none; }
+    .spec-label { color: var(--muted); width: 5rem; flex-shrink: 0; }
+    .spec-value { flex: 1; font-weight: 500; }
+
+    /* 产品详情底部固定栏 */
+    .product-bottom-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: #fff; border-top: 1px solid var(--rule);
+      padding: 0.6rem 0.8rem calc(0.6rem + env(safe-area-inset-bottom));
+      display: flex; align-items: center; gap: 0.6rem;
+      z-index: 5;
+    }
+    .pbb-price {
+      flex: 1; display: flex; flex-direction: column;
+    }
+    .pbb-price .price-num {
+      font-size: 1.25rem; font-weight: 800; color: var(--accent); line-height: 1.1;
+    }
+    .pbb-price .price-unit {
+      font-size: 0.68rem; color: var(--muted); margin-top: 0.1rem;
+    }
+    .pbb-btn {
+      background: var(--accent); color: #fff;
+      padding: 0.65rem 1.2rem; border-radius: 22px;
+      font-size: 0.85rem; font-weight: 600;
+      display: flex; align-items: center; gap: 0.3rem;
+      white-space: nowrap;
+    }
+
     /* ---- Bottom Bar ---- */
     .bottom-bar {
       position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
@@ -266,7 +479,7 @@
     }
     .bb-item {
       flex: 1; display: flex; flex-direction: column; align-items: center;
-      font-size: 0.65rem; color: var(--muted); gap: 0.15rem;
+      font-size: 0.7rem; color: var(--muted); gap: 0.15rem;
       padding: 0.2rem 0;
     }
     .bb-item .bb-icon { font-size: 1.2rem; }
@@ -360,6 +573,13 @@
   <!-- Detail Modal -->
   <div class="modal-mask" id="modal">
     <div class="modal" id="modalContent">
+      <!-- 动态生成 -->
+    </div>
+  </div>
+
+  <!-- Product Detail Modal -->
+  <div class="product-modal-mask" id="productModal">
+    <div class="product-modal" id="productModalContent">
       <!-- 动态生成 -->
     </div>
   </div>
@@ -769,22 +989,22 @@ function renderBooths(cat) {
   const grid = document.getElementById('boothGrid');
   const list = cat === 'all' ? booths : booths.filter(b => b.cat === cat);
   document.getElementById('boothCount').textContent = '共 ' + list.length + ' 家';
-  grid.innerHTML = list.map(b => `
+  grid.innerHTML = list.map(b => {
+    const imgStyle = b.photo ? ' style="background-image:url(\'' + b.photo + '\')"' : '';
+    const placeholder = b.photo ? '' : '<div class="img-placeholder"><span class="ph-icon">📷</span><span class="ph-text">暂无图片</span></div>';
+    return `
     <div class="booth-card" onclick="showDetail(${b.id})">
-      <div class="booth-img ${b.bg}">
+      <div class="booth-img"${imgStyle}>
         <span class="cat-badge">${b.catName}</span>
         <span class="booth-no">${b.no}</span>
-        <span>${b.emoji}</span>
+        ${placeholder}
       </div>
       <div class="booth-info">
         <div class="booth-name">${b.name}</div>
         <div class="booth-desc">${b.desc}</div>
-        <div class="booth-price">
-          ${b.products[0].price}<span class="unit">${b.products[0].unit} 起</span>
-        </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 // ============= 分类切换 =============
@@ -801,6 +1021,78 @@ document.getElementById('catBar').addEventListener('click', function(e) {
 function showDetail(id) {
   const b = booths.find(x => x.id === id);
   if (!b) return;
+
+  // 兼容旧字段名
+  const contactName = b.contactName || b.contact || '';
+  const phone = b.phone || '';
+  const contactName2 = b.contactName2 || '';
+  const phone2 = b.phone2 || '';
+  const wechatId = b.wechatId || b.wechat || '';
+  const wechatQr = b.wechatQr || '';
+  const payQr = b.payQr || '';
+
+  // modal-hero 图片
+  const heroStyle = b.photo ? ' style="background-image:url(\'' + b.photo + '\')"' : '';
+  const heroPlaceholder = b.photo ? '' : '<div class="img-placeholder"><span class="ph-icon">📷</span><span class="ph-text">暂无图片</span></div>';
+
+  // 联系人列表
+  let contactPersonsHtml = '';
+  if (contactName && phone) {
+    contactPersonsHtml += `
+      <div class="contact-person">
+        <div class="cp-avatar">${contactName.charAt(0)}</div>
+        <div class="cp-info">
+          <div class="cp-name">${contactName}</div>
+          <div class="cp-phone">${phone}</div>
+        </div>
+        <a class="cp-call" href="tel:${phone}">📞</a>
+      </div>`;
+  }
+  if (contactName2 && phone2) {
+    contactPersonsHtml += `
+      <div class="contact-person">
+        <div class="cp-avatar">${contactName2.charAt(0)}</div>
+        <div class="cp-info">
+          <div class="cp-name">${contactName2}</div>
+          <div class="cp-phone">${phone2}</div>
+        </div>
+        <a class="cp-call" href="tel:${phone2}">📞</a>
+      </div>`;
+  }
+
+  // 二维码区域（默认隐藏，点击扫码按钮后展开）
+  const hasWechatQr = !!wechatQr;
+  const hasPayQr = !!payQr;
+  let qrItemsHtml = '';
+  if (hasWechatQr) {
+    qrItemsHtml += `
+      <div class="qr-item">
+        <div class="qr-title">扫码加微信</div>
+        <div class="qr-img" style="background-image:url('${wechatQr}')"></div>
+        <div class="qr-label">长按识别或截图保存<br/>添加商家微信咨询</div>
+      </div>`;
+  } else if (wechatId) {
+    qrItemsHtml += `
+      <div class="qr-item">
+        <div class="qr-title">扫码加微信</div>
+        <div class="qr-img" style="flex-direction:column;gap:0.3rem;font-size:1.4rem;color:var(--muted);">
+          <span>📷</span>
+          <span style="font-size:0.65rem;">暂无二维码</span>
+        </div>
+        <div class="qr-label">微信号：${wechatId}<br/>请复制后打开微信添加</div>
+      </div>`;
+  }
+  if (hasPayQr) {
+    qrItemsHtml += `
+      <div class="qr-item">
+        <div class="qr-title">扫码付款</div>
+        <div class="qr-img" style="background-image:url('${payQr}')"></div>
+        <div class="qr-label">长按识别或截图保存<br/>向商家付款</div>
+      </div>`;
+  }
+  const qrSectionClass = (hasWechatQr || wechatId) && !hasPayQr ? ' qr-wechat-only' : '';
+  const qrHtml = qrItemsHtml ? `<div class="qr-section${qrSectionClass}" id="qrSection" style="display:none;">${qrItemsHtml}</div>` : '';
+
   const modal = document.getElementById('modalContent');
   modal.innerHTML = `
     <div class="modal-header">
@@ -808,8 +1100,8 @@ function showDetail(id) {
       <h3>${b.name}</h3>
       <span class="modal-booth-no">${b.no}</span>
     </div>
-    <div class="modal-hero ${b.bg}">
-      <span>${b.emoji}</span>
+    <div class="modal-hero"${heroStyle}>
+      ${heroPlaceholder}
     </div>
     <div class="modal-body">
       <div class="modal-section">
@@ -826,7 +1118,7 @@ function showDetail(id) {
           </div>
           <div class="meta-item">
             <div class="lbl">联系人</div>
-            <div class="val">${b.contact}</div>
+            <div class="val">${contactName || '-'}</div>
           </div>
           <div class="meta-item">
             <div class="lbl">地址</div>
@@ -838,38 +1130,318 @@ function showDetail(id) {
       <div class="modal-section">
         <h4>产品展示</h4>
         <div class="product-list">
-          ${b.products.map(p => `
-            <div class="product-item">
-              <div class="product-img">${p.emoji}</div>
+          ${b.products.map((p, pIdx) => {
+            const hasImages = p.images && p.images.length > 0;
+            const imgCount = hasImages ? p.images.length : 0;
+            const multiClass = imgCount > 1 ? ' has-multi' : '';
+            let imgStyle = '';
+            let placeholder = '';
+            let indicator = '';
+            if (hasImages) {
+              imgStyle = ' style="background-image:url(\'' + p.images[0] + '\')"';
+              if (imgCount > 1) {
+                indicator = '<span class="img-indicator">1/' + imgCount + '</span>';
+              }
+            } else {
+              placeholder = '<div class="img-placeholder"><span class="ph-icon">📷</span><span class="ph-text">暂无图片</span></div>';
+            }
+            return `
+            <div class="product-item" onclick="openProductDetail(${b.id}, ${pIdx})">
+              <div class="product-img${multiClass}"${imgStyle}>
+                ${placeholder}
+                ${indicator}
+              </div>
               <div class="product-info">
                 <div class="product-name">${p.name}</div>
                 <div class="product-desc">${p.desc}</div>
                 <div class="product-price">${p.price}<span class="unit">${p.unit}</span></div>
               </div>
             </div>
-          `).join('')}
+          `}).join('')}
         </div>
       </div>
 
       <div class="modal-section">
         <h4>一键联系</h4>
+        <div class="contact-persons">
+          ${contactPersonsHtml}
+        </div>
+        ${qrHtml}
         <div class="contact-row">
-          <a class="contact-btn primary" href="tel:${b.phone}">
+          <a class="contact-btn primary" href="tel:${phone}">
             <span class="icon">📞</span>电话咨询
           </a>
-          <div class="contact-btn secondary" onclick="copyWechat('${b.wechat}')">
-            <span class="icon">💬</span>复制微信
+          <div class="contact-btn secondary" onclick="toggleQrSection()">
+            <span class="icon">📱</span>扫码加微信
           </div>
         </div>
         <div class="notice">
-          💡 温馨提示：产品价格为示例展示，以商家实际报价为准。点击"电话咨询"可直接拨打，点击"复制微信"后打开微信添加好友。
+          💡 温馨提示：产品价格为示例展示，以商家实际报价为准。点击"电话咨询"可直接拨打，点击"扫码加微信"查看商家微信二维码。
         </div>
       </div>
     </div>
   `;
   document.getElementById('modal').classList.add('show');
   document.body.style.overflow = 'hidden';
+
+  // 初始化产品图片索引
+  window._productImgIndex = {};
+  b.products.forEach((p, pIdx) => {
+    window._productImgIndex[pIdx] = 0;
+  });
+  window._currentBoothId = id;
 }
+
+// 产品图片轮播
+function productImgNext(pIdx, boothId) {
+  const b = booths.find(x => x.id === boothId);
+  if (!b || !b.products[pIdx] || !b.products[pIdx].images || b.products[pIdx].images.length <= 1) return;
+  const images = b.products[pIdx].images;
+  if (!window._productImgIndex) window._productImgIndex = {};
+  let idx = window._productImgIndex[pIdx] || 0;
+  idx = (idx + 1) % images.length;
+  window._productImgIndex[pIdx] = idx;
+  updateProductImg(pIdx, boothId);
+}
+
+function productImgPrev(pIdx, boothId) {
+  const b = booths.find(x => x.id === boothId);
+  if (!b || !b.products[pIdx] || !b.products[pIdx].images || b.products[pIdx].images.length <= 1) return;
+  const images = b.products[pIdx].images;
+  if (!window._productImgIndex) window._productImgIndex = {};
+  let idx = window._productImgIndex[pIdx] || 0;
+  idx = (idx - 1 + images.length) % images.length;
+  window._productImgIndex[pIdx] = idx;
+  updateProductImg(pIdx, boothId);
+}
+
+function updateProductImg(pIdx, boothId) {
+  const b = booths.find(x => x.id === boothId);
+  if (!b || !b.products[pIdx]) return;
+  const images = b.products[pIdx].images;
+  if (!images || images.length === 0) return;
+  const idx = window._productImgIndex[pIdx] || 0;
+  const productList = document.querySelectorAll('.product-list .product-item');
+  const item = productList[pIdx];
+  if (!item) return;
+  const imgEl = item.querySelector('.product-img');
+  if (imgEl) {
+    imgEl.style.backgroundImage = 'url(\'' + images[idx] + '\')';
+    const indicator = imgEl.querySelector('.img-indicator');
+    if (indicator) {
+      indicator.textContent = (idx + 1) + '/' + images.length;
+    }
+  }
+}
+
+// 切换二维码区域显示
+function toggleQrSection() {
+  const qr = document.getElementById('qrSection');
+  if (!qr) return;
+  if (qr.style.display === 'none' || qr.style.display === '') {
+    qr.style.display = 'flex';
+    qr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    qr.style.display = 'none';
+  }
+}
+
+// ============= 产品详情弹窗 =============
+function openProductDetail(boothId, pIdx) {
+  const b = booths.find(x => x.id === boothId);
+  if (!b || !b.products[pIdx]) return;
+  const p = b.products[pIdx];
+  const images = p.images && p.images.length > 0 ? p.images : [];
+  const hasImages = images.length > 0;
+
+  // 图片轮播内容
+  let gallerySlides = '';
+  if (hasImages) {
+    gallerySlides = images.map(function(img) {
+      return '<div class="product-gallery-slide" style="background-image:url(\'' + img + '\')"></div>';
+    }).join('');
+  } else {
+    gallerySlides = '<div class="img-placeholder"><span class="ph-icon">📷</span><span class="ph-text">暂无图片</span></div>';
+  }
+
+  // 规格参数
+  let specsHtml = '';
+  if (p.specs && p.specs.length > 0) {
+    specsHtml = '<div class="spec-list">' + p.specs.map(function(s) {
+      return '<div class="spec-item"><span class="spec-label">' + s.label + '</span><span class="spec-value">' + s.value + '</span></div>';
+    }).join('') + '</div>';
+  } else {
+    specsHtml = '<p style="font-size:0.82rem;color:var(--muted);">暂无规格参数</p>';
+  }
+
+  // 商品详情
+  const detailText = p.detail || '暂无详细介绍';
+
+  // 商家微信二维码（用于底部按钮）
+  const wechatQr = b.wechatQr || '';
+  const wechatId = b.wechatId || b.wechat || '';
+
+  const modalContent = document.getElementById('productModalContent');
+  modalContent.innerHTML = `
+    <div class="product-modal-close" onclick="closeProductModal()">✕</div>
+    <div class="product-gallery" id="productGallery">
+      <div class="product-gallery-track" id="galleryTrack">
+        ${gallerySlides}
+      </div>
+      ${hasImages && images.length > 1 ? '<span class="gallery-indicator" id="galleryIndicator">1/' + images.length + '</span>' : ''}
+      ${hasImages && images.length > 1 ? `
+        <span class="gallery-nav prev" onclick="galleryPrev()">‹</span>
+        <span class="gallery-nav next" onclick="galleryNext()">›</span>
+      ` : ''}
+    </div>
+    <div class="product-modal-body">
+      <div class="product-title-row">
+        <div class="product-title">${p.name}</div>
+        <div class="product-price-big">${p.price}<span class="unit">${p.unit || ''}</span></div>
+      </div>
+      <div class="product-short-desc">${p.desc || ''}</div>
+
+      <div class="product-section">
+        <h4>商品详情</h4>
+        <div class="product-detail-text">${detailText}</div>
+      </div>
+
+      <div class="product-section">
+        <h4>规格参数</h4>
+        ${specsHtml}
+      </div>
+    </div>
+    <div class="product-bottom-bar">
+      <div class="pbb-price">
+        <span class="price-num">${p.price}</span>
+        <span class="price-unit">${p.unit || ''}</span>
+      </div>
+      <div class="pbb-btn" onclick="showProductWechatQr()">
+        <span>📱</span>扫码咨询购买
+      </div>
+    </div>
+    <!-- 产品页内微信二维码弹层（简单实现：用alert展示或展开底部） -->
+    <div id="productQrPopup" style="display:none;position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--rule);padding:1rem 1rem calc(1rem + env(safe-area-inset-bottom));z-index:10;border-radius:12px 12px 0 0;animation:slideUp 0.25s ease-out;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+        <div style="font-weight:700;font-size:0.95rem;">扫码咨询购买</div>
+        <div onclick="hideProductQrPopup()" style="font-size:1.2rem;color:var(--muted);width:28px;height:28px;display:flex;align-items:center;justify-content:center;">✕</div>
+      </div>
+      <div style="display:flex;gap:0.6rem;">
+        ${wechatQr ? `
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:0.5rem;">扫码加微信</div>
+            <div style="width:100%;aspect-ratio:1/1;background:var(--bg2);border-radius:6px;background-size:cover;background-position:center;background-image:url('${wechatQr}');"></div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;">长按识别或截图保存</div>
+          </div>
+        ` : `
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:0.5rem;">商家微信</div>
+            <div style="width:100%;aspect-ratio:1/1;background:var(--bg2);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.3rem;color:var(--muted);">
+              <span style="font-size:1.4rem;">📷</span>
+              <span style="font-size:0.65rem;">暂无二维码</span>
+            </div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;">微信号：${wechatId}<br/>请复制后添加</div>
+          </div>
+        `}
+        ${b.payQr ? `
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:0.78rem;font-weight:600;margin-bottom:0.5rem;">扫码付款</div>
+            <div style="width:100%;aspect-ratio:1/1;background:var(--bg2);border-radius:6px;background-size:cover;background-position:center;background-image:url('${b.payQr}');"></div>
+            <div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;">长按识别或截图保存</div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('productModal').classList.add('show');
+  // 产品详情打开时，保持body滚动锁定（因为商家详情已锁定）
+
+  // 初始化轮播索引
+  window._galleryIndex = 0;
+  window._galleryImages = images;
+
+  // 添加触摸滑动支持
+  initGallerySwipe();
+}
+
+// 产品详情轮播
+function galleryNext() {
+  const images = window._galleryImages;
+  if (!images || images.length <= 1) return;
+  let idx = window._galleryIndex || 0;
+  idx = (idx + 1) % images.length;
+  window._galleryIndex = idx;
+  updateGallery();
+}
+
+function galleryPrev() {
+  const images = window._galleryImages;
+  if (!images || images.length <= 1) return;
+  let idx = window._galleryIndex || 0;
+  idx = (idx - 1 + images.length) % images.length;
+  window._galleryIndex = idx;
+  updateGallery();
+}
+
+function updateGallery() {
+  const track = document.getElementById('galleryTrack');
+  const indicator = document.getElementById('galleryIndicator');
+  const idx = window._galleryIndex || 0;
+  if (track) {
+    track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+  }
+  if (indicator) {
+    indicator.textContent = (idx + 1) + '/' + window._galleryImages.length;
+  }
+}
+
+// 触摸滑动支持
+function initGallerySwipe() {
+  const gallery = document.getElementById('productGallery');
+  if (!gallery) return;
+  let startX = 0;
+  let endX = 0;
+  gallery.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+  gallery.addEventListener('touchend', function(e) {
+    endX = e.changedTouches[0].clientX;
+    const diff = startX - endX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        galleryNext();
+      } else {
+        galleryPrev();
+      }
+    }
+  }, { passive: true });
+}
+
+// 产品详情页显示微信二维码弹层
+function showProductWechatQr() {
+  const popup = document.getElementById('productQrPopup');
+  if (popup) popup.style.display = 'block';
+}
+
+function hideProductQrPopup() {
+  const popup = document.getElementById('productQrPopup');
+  if (popup) popup.style.display = 'none';
+}
+
+function closeProductModal() {
+  document.getElementById('productModal').classList.remove('show');
+}
+
+// 产品modal点击遮罩关闭
+document.addEventListener('DOMContentLoaded', function() {
+  const pm = document.getElementById('productModal');
+  if (pm) {
+    pm.addEventListener('click', function(e) {
+      if (e.target.id === 'productModal') closeProductModal();
+    });
+  }
+});
 
 function closeModal() {
   document.getElementById('modal').classList.remove('show');
@@ -908,8 +1480,19 @@ function saveQR() {
 }
 
 function contactOrg() {
-  if (confirm('联系主办方\n东莞市茂名商会秘书处\n\n是否拨打电话？')) {
-    window.location.href = 'tel:0769-00000000';
+  var org = (window.SITE_CONFIG && window.SITE_CONFIG.organizer) || {
+    name: "东莞市茂名商会秘书处",
+    contact1: "黄嘉梁", phone1: "13923740820",
+    contact2: "赖仕平", phone2: "13925818863"
+  };
+  var msg = org.name + '\n\n';
+  msg += '📞 ' + org.contact1 + '：' + org.phone1;
+  if (org.contact2 && org.phone2) {
+    msg += '\n📞 ' + org.contact2 + '：' + org.phone2;
+  }
+  msg += '\n\n请选择要拨打的联系人';
+  if (confirm(msg)) {
+    window.location.href = 'tel:' + org.phone1;
   }
 }
 

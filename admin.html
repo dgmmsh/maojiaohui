@@ -21,6 +21,9 @@
       --gold-soft: #c2922c1a;
       --success: #2e7d52;
       --danger: #c53030;
+      --warn-bg: #fff8e1;
+      --warn-border: #e6b800;
+      --warn-text: #8a6d00;
       --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
       --max: 520px;
     }
@@ -178,6 +181,10 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 1.4rem; flex-shrink: 0; background: var(--bg2);
     }
+    .booth-item .b-photo {
+      width: 40px; height: 40px; border-radius: 8px;
+      flex-shrink: 0; object-fit: cover;
+    }
     .booth-item .b-info { flex: 1; min-width: 0; }
     .booth-item .b-name { font-size: 0.88rem; font-weight: 600; }
     .booth-item .b-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
@@ -234,6 +241,9 @@
     .form-group label {
       display: block; font-size: 0.78rem; font-weight: 600;
       color: var(--muted); margin-bottom: 0.3rem;
+    }
+    .form-group label .optional {
+      font-weight: 400; font-size: 0.72rem; margin-left: 0.3rem;
     }
     .form-group input, .form-group select, .form-group textarea {
       width: 100%; padding: 0.55rem 0.7rem;
@@ -307,6 +317,278 @@
       border-radius: 6px; margin-top: 0.8rem; line-height: 1.5;
     }
     .hint b { color: var(--accent2); }
+
+    /* ---- 醒目黄色提示框 ---- */
+    .export-notice {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-left: 4px solid var(--warn-border);
+      border-radius: 8px;
+      padding: 0.8rem 0.9rem;
+      margin: 0.8rem 1rem;
+      font-size: 0.8rem;
+      color: var(--warn-text);
+      line-height: 1.6;
+    }
+    .export-notice b {
+      color: #b8860b;
+      font-weight: 700;
+    }
+    .export-notice .notice-title {
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* ---- 图片上传区域 ---- */
+    .img-upload-area {
+      margin-top: 0.3rem;
+    }
+    .img-preview {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 8px;
+      background: var(--bg2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--rule);
+    }
+    .img-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .img-preview .placeholder {
+      font-size: 2.5rem;
+      opacity: 0.5;
+    }
+    .img-upload-btns {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .img-upload-btns button {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: var(--card);
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      color: var(--ink);
+    }
+    .img-upload-btns button:active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .img-upload-btns .del-btn {
+      flex: 0 0 auto;
+      width: auto;
+      padding: 0.5rem 0.8rem;
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+    .img-upload-btns .del-btn:active {
+      background: #c530301a;
+      color: var(--danger);
+    }
+
+    /* 产品图片网格 */
+    .product-imgs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+    .product-img-item {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg2);
+      border: 1px solid var(--rule);
+    }
+    .product-img-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .product-img-item .img-del {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      font-size: 0.7rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .product-img-add {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      border: 1px dashed var(--rule);
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.7rem;
+    }
+    .product-img-add:active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .product-img-add .plus {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    /* 规格参数 */
+    .specs-list { margin-top: 0.3rem; }
+    .spec-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 0.4rem;
+      align-items: start;
+      margin-bottom: 0.4rem;
+    }
+    .spec-item input {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      font-size: 0.82rem;
+      background: var(--card);
+    }
+    .spec-item .spec-del {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .specs-add-btn {
+      width: 100%;
+      padding: 0.45rem;
+      border: 1px dashed var(--rule);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.78rem;
+      cursor: pointer;
+      margin-top: 0.2rem;
+    }
+    .specs-add-btn:active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* 隐藏的文件输入 */
+    .hidden-file { display: none; }
+
+    /* 图片上传选项弹窗 */
+    .img-option-sheet {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: var(--max);
+      background: var(--bg);
+      border-radius: 16px 16px 0 0;
+      padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom));
+      z-index: 150;
+      animation: slideUp 0.25s ease-out;
+    }
+    .img-option-sheet button {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      background: var(--card);
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .img-option-sheet button:active {
+      background: var(--accent-soft);
+    }
+    .img-option-sheet .cancel-btn {
+      background: var(--bg2);
+      margin-bottom: 0;
+      margin-top: 0.3rem;
+    }
+    .img-option-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 140;
+    }
+
+    /* Hero背景图上传 */
+    .hero-img-preview {
+      width: 100%;
+      height: 120px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), #8c2a24);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--rule);
+    }
+    .hero-img-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .hero-img-preview .placeholder {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+    }
+
+    /* 联系人分组标题 */
+    .contact-section-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 1rem 0 0.5rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px dashed var(--rule);
+    }
   </style>
 </head>
 <body>
@@ -379,12 +661,20 @@
 
     <input type="file" id="fileInput" accept=".js,.json" style="display:none;" onchange="handleImport(event)">
 
-    <div class="hint" style="margin: 1rem;">
+    <!-- 导出醒目提示 -->
+    <div class="export-notice">
+      <div class="notice-title">⚠️ 导出上线说明</div>
+      ① 编辑完成后，点底部「📤 导出」下载 <b>data.js</b><br/>
+      ② 将文件上传到 GitHub 替换 <code>assets/data.js</code><br/>
+      ③ 上传后约 <b>30秒~1分钟</b> 线上才会更新<br/>
+      ④ 数据保存在本手机浏览器，换手机需先导出再导入
+    </div>
+
+    <div class="hint" style="margin: 0 1rem 1rem;">
       💡 <b>操作提示</b><br/>
       ① 点击「+ 新增」添加新商家<br/>
-      ② 点击 ✏️ 编辑商家信息和产品<br/>
-      ③ 编辑完成后点底部「导出数据」，替换 <code>assets/data.js</code> 即可上线<br/>
-      ④ 数据保存在本手机浏览器里，换手机需先导出再导入
+      ② 点击 ✏️ 编辑商家信息、产品和图片<br/>
+      ③ 图片支持手机拍照或从相册选择，自动压缩
     </div>
 
     </div><!-- /tabBooth -->
@@ -399,12 +689,19 @@
         <button class="btn btn-primary" style="width:100%;" onclick="saveSiteConfig()">💾 保存站点设置</button>
       </div>
 
-      <div class="hint" style="margin: 0 1rem;">
+      <!-- 导出醒目提示 -->
+      <div class="export-notice">
+        <div class="notice-title">⚠️ 导出上线说明</div>
+        ① 修改完成后点「💾 保存」，再点底部「📤 导出」下载 <b>site-config.js</b><br/>
+        ② 将文件上传到 GitHub 替换 <code>assets/site-config.js</code><br/>
+        ③ 上传后约 <b>30秒~1分钟</b> 线上才会更新
+      </div>
+
+      <div class="hint" style="margin: 0 1rem 1rem;">
         ⚙️ <b>站点设置说明</b><br/>
         ① 可修改主页标题、横幅文字、统计数字、分类导航、底部按钮等<br/>
         ② 主题色可通过取色器自定义<br/>
-        ③ 保存后点底部「导出配置」，替换 <code>assets/site-config.js</code> 即可生效<br/>
-        ④ 横幅可改用自定义图片（填图片URL）
+        ③ 横幅背景支持手机拍照上传或相册选图
       </div>
     </div>
 
@@ -427,6 +724,17 @@
       </div>
     </div>
   </div>
+
+  <!-- 图片上传选项弹窗 -->
+  <div id="imgOptionMask" class="img-option-mask" style="display:none;" onclick="closeImgOption()"></div>
+  <div id="imgOptionSheet" class="img-option-sheet" style="display:none;">
+    <button onclick="chooseImgOption('camera')">📷 拍照上传</button>
+    <button onclick="chooseImgOption('album')">🖼️ 从相册选择</button>
+    <button class="cancel-btn" onclick="closeImgOption()">取消</button>
+  </div>
+
+  <!-- 隐藏的文件输入（用于图片上传） -->
+  <input type="file" id="imgFileInput" class="hidden-file" accept="image/*" onchange="handleImgUpload(event)">
 
   <!-- Toast -->
   <div class="toast" id="toast"></div>
@@ -457,11 +765,123 @@ const COMMON_EMOJIS = ['🥮','🍊','🍷','🍶','🧃','🪵','🍜','🦷','
 let currentData = [];
 let editingId = null;
 let editingProducts = [];
+let editingPhoto = '';
+let editingWechatQr = '';
+let editingPayQr = '';
+
+// 图片上传回调上下文
+let imgUploadContext = null;
+
+// ============= 图片压缩工具函数 =============
+/**
+ * 压缩图片
+ * @param {File} file - 图片文件
+ * @param {number} maxWidth - 最大宽度
+ * @param {number} quality - JPEG质量 0-1
+ * @returns {Promise<string>} base64字符串
+ */
+function compressImage(file, maxWidth, quality) {
+  return new Promise(function(resolve, reject) {
+    if (!file || !file.type || !file.type.startsWith('image/')) {
+      reject(new Error('不是图片文件'));
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        try {
+          var canvas = document.createElement('canvas');
+          var ctx = canvas.getContext('2d');
+          var width = img.width;
+          var height = img.height;
+
+          // 等比例缩放
+          if (width > maxWidth) {
+            height = Math.round(height * (maxWidth / width));
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          var base64 = canvas.toDataURL('image/jpeg', quality || 0.8);
+          resolve(base64);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      img.onerror = function() {
+        reject(new Error('图片加载失败'));
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = function() {
+      reject(new Error('文件读取失败'));
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ============= 图片上传选项 =============
+function openImgOption(context) {
+  imgUploadContext = context;
+  document.getElementById('imgOptionMask').style.display = 'block';
+  document.getElementById('imgOptionSheet').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImgOption() {
+  document.getElementById('imgOptionMask').style.display = 'none';
+  document.getElementById('imgOptionSheet').style.display = 'none';
+  document.body.style.overflow = '';
+  imgUploadContext = null;
+}
+
+function chooseImgOption(type) {
+  var input = document.getElementById('imgFileInput');
+  if (type === 'camera') {
+    input.setAttribute('capture', 'environment');
+  } else {
+    input.removeAttribute('capture');
+  }
+  input.setAttribute('accept', 'image/*');
+  input.click();
+  closeImgOption();
+}
+
+function handleImgUpload(event) {
+  var file = event.target.files[0];
+  if (!file || !imgUploadContext) {
+    event.target.value = '';
+    return;
+  }
+
+  var maxWidth = imgUploadContext.maxWidth || 600;
+  var quality = imgUploadContext.quality || 0.8;
+
+  toast('正在处理图片...');
+
+  compressImage(file, maxWidth, quality)
+    .then(function(base64) {
+      if (imgUploadContext.callback) {
+        imgUploadContext.callback(base64);
+      }
+      toast('✅ 上传成功');
+    })
+    .catch(function(err) {
+      toast('图片处理失败：' + err.message);
+    })
+    .finally(function() {
+      event.target.value = '';
+    });
+}
 
 // ============= 登录 =============
 function doLogin() {
-  const input = document.getElementById('pwdInput').value;
-  const savedPwd = localStorage.getItem(PWD_KEY) || DEFAULT_PWD;
+  var input = document.getElementById('pwdInput').value;
+  var savedPwd = localStorage.getItem(PWD_KEY) || DEFAULT_PWD;
   if (input === savedPwd) {
     localStorage.setItem('maojiaohui_logged_in', '1');
     showDashboard();
@@ -484,12 +904,13 @@ function showDashboard() {
   updateStats();
 }
 
-// ============= 数据加载 =============
+// ============= 数据加载与兼容 =============
 function loadData() {
-  const saved = localStorage.getItem(STORAGE_KEY);
+  var saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
-      currentData = JSON.parse(saved);
+      var raw = JSON.parse(saved);
+      currentData = migrateBoothData(raw);
     } catch(e) {
       currentData = getDefaultData();
     }
@@ -499,15 +920,61 @@ function loadData() {
   }
 }
 
+/**
+ * 旧数据字段兼容：将旧字段映射到新字段
+ */
+function migrateBoothData(data) {
+  if (!Array.isArray(data)) return [];
+  return data.map(function(b) {
+    var booth = Object.assign({}, b);
+    // 联系人字段兼容
+    if (!booth.contactName && booth.contact) {
+      booth.contactName = booth.contact;
+    }
+    if (!booth.wechatId && booth.wechat) {
+      booth.wechatId = booth.wechat;
+    }
+    // 确保产品有images数组、detail和specs
+    if (booth.products && Array.isArray(booth.products)) {
+      booth.products = booth.products.map(function(p) {
+        var prod = Object.assign({}, p);
+        if (!prod.images || !Array.isArray(prod.images)) {
+          prod.images = [];
+        }
+        if (!prod.detail) {
+          prod.detail = '';
+        }
+        if (!prod.specs || !Array.isArray(prod.specs)) {
+          prod.specs = [];
+        }
+        return prod;
+      });
+    } else {
+      booth.products = [];
+    }
+    // 确保新字段存在
+    if (!booth.photo) booth.photo = '';
+    if (!booth.wechatQr) booth.wechatQr = '';
+    if (!booth.payQr) booth.payQr = '';
+    if (!booth.contactName2) booth.contactName2 = '';
+    if (!booth.phone2) booth.phone2 = '';
+    if (!booth.contactName) booth.contactName = '';
+    if (!booth.phone) booth.phone = '';
+    if (!booth.wechatId) booth.wechatId = '';
+    return booth;
+  });
+}
+
 function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
   updateStats();
 }
 
 function getDefaultData() {
-  return (window.BOOTH_DATA && window.BOOTH_DATA.length)
+  var data = (window.BOOTH_DATA && window.BOOTH_DATA.length)
     ? JSON.parse(JSON.stringify(window.BOOTH_DATA))
     : [];
+  return migrateBoothData(data);
 }
 
 function resetData() {
@@ -521,9 +988,9 @@ function resetData() {
 // ============= 统计 =============
 function updateStats() {
   document.getElementById('statBooths').textContent = currentData.length;
-  let pCount = 0;
-  const cats = new Set();
-  currentData.forEach(b => {
+  var pCount = 0;
+  var cats = new Set();
+  currentData.forEach(function(b) {
     pCount += (b.products || []).length;
     cats.add(b.cat);
   });
@@ -533,14 +1000,18 @@ function updateStats() {
 
 // ============= 商家列表渲染 =============
 function renderBoothList() {
-  const list = document.getElementById('boothList');
+  var list = document.getElementById('boothList');
   if (currentData.length === 0) {
     list.innerHTML = '<p style="text-align:center;color:var(--muted);padding:2rem 0;">暂无商家，点击右上角「+新增」添加</p>';
     return;
   }
-  list.innerHTML = currentData.map(b => `
+  list.innerHTML = currentData.map(function(b) {
+    var photoHtml = b.photo
+      ? '<img class="b-photo" src="' + b.photo + '" alt="" />'
+      : '<div class="b-emoji">' + (b.emoji || '🏪') + '</div>';
+    return `
     <div class="booth-item">
-      <div class="b-emoji">${b.emoji || '🏪'}</div>
+      ${photoHtml}
       <div class="b-info">
         <div class="b-name">${escapeHtml(b.name)}</div>
         <div class="b-meta">${b.no || ''} · ${b.catName || b.cat || ''} · ${(b.products||[]).length}个产品</div>
@@ -550,15 +1021,18 @@ function renderBoothList() {
         <button class="icon-btn del" onclick="deleteBooth(${b.id})" title="删除">🗑️</button>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 // ============= 新增/编辑弹窗 =============
 function openAddModal() {
   editingId = null;
-  editingProducts = [{ name: '', desc: '', price: '', unit: '', emoji: '🎁' }];
-  const newId = currentData.length > 0
-    ? Math.max(...currentData.map(b => b.id)) + 1
+  editingProducts = [{ name: '', desc: '', price: '', unit: '', emoji: '🎁', images: [], detail: '', specs: [] }];
+  editingPhoto = '';
+  editingWechatQr = '';
+  editingPayQr = '';
+  var newId = currentData.length > 0
+    ? Math.max.apply(null, currentData.map(function(b) { return b.id; })) + 1
     : 1;
   renderForm({
     id: newId,
@@ -569,25 +1043,39 @@ function openAddModal() {
     emoji: '🥮',
     bg: 'bg-mooncake',
     desc: '',
+    photo: '',
     products: editingProducts,
-    contact: '',
+    contactName: '',
     phone: '',
-    wechat: '',
+    wechatId: '',
+    wechatQr: '',
+    payQr: '',
+    contactName2: '',
+    phone2: '',
     address: ''
   }, '新增商家');
 }
 
 function openEditModal(id) {
-  const booth = currentData.find(b => b.id === id);
+  var booth = currentData.find(function(b) { return b.id === id; });
   if (!booth) return;
   editingId = id;
   editingProducts = JSON.parse(JSON.stringify(booth.products || []));
+  // 确保每个产品都有images数组、detail和specs
+  editingProducts.forEach(function(p) {
+    if (!p.images || !Array.isArray(p.images)) p.images = [];
+    if (!p.detail) p.detail = '';
+    if (!p.specs || !Array.isArray(p.specs)) p.specs = [];
+  });
+  editingPhoto = booth.photo || '';
+  editingWechatQr = booth.wechatQr || '';
+  editingPayQr = booth.payQr || '';
   renderForm(booth, '编辑商家');
 }
 
 function renderForm(data, title) {
   document.getElementById('modalTitle').textContent = title;
-  const body = document.getElementById('modalBody');
+  var body = document.getElementById('modalBody');
   body.innerHTML = `
     <div class="form-row">
       <div class="form-group">
@@ -604,14 +1092,18 @@ function renderForm(data, title) {
       <div class="form-group">
         <label>所属品类</label>
         <select id="f_cat" onchange="onCatChange(this.value)">
-          ${CATEGORIES.map(c => `<option value="${c.key}" ${data.cat === c.key ? 'selected' : ''}>${c.name}</option>`).join('')}
+          ${CATEGORIES.map(function(c) {
+            return '<option value="' + c.key + '"' + (data.cat === c.key ? ' selected' : '') + '>' + c.name + '</option>';
+          }).join('')}
         </select>
       </div>
       <div class="form-group">
         <label>商家图标</label>
         <input type="text" id="f_emoji" value="${data.emoji || '🏪'}" placeholder="点下方选表情" readonly />
         <div class="emoji-grid" id="emojiGrid">
-          ${COMMON_EMOJIS.map(e => `<button type="button" onclick="setEmoji('${e}')">${e}</button>`).join('')}
+          ${COMMON_EMOJIS.map(function(e) {
+            return '<button type="button" onclick="setEmoji(\'' + e + '\')">' + e + '</button>';
+          }).join('')}
         </div>
       </div>
     </div>
@@ -619,6 +1111,23 @@ function renderForm(data, title) {
     <div class="form-group">
       <label>商家简介</label>
       <textarea id="f_desc" rows="2" placeholder="一句话介绍商家">${escapeHtml(data.desc || '')}</textarea>
+    </div>
+
+    <!-- 商家封面图 -->
+    <div class="form-group">
+      <label>商家封面图</label>
+      <div class="img-upload-area">
+        <div class="img-preview" id="photoPreview">
+          ${editingPhoto
+            ? '<img src="' + editingPhoto + '" alt="封面图" />'
+            : '<div class="placeholder">🏪</div>'}
+        </div>
+        <div class="img-upload-btns">
+          <button type="button" onclick="uploadBoothPhoto()">📷 拍照</button>
+          <button type="button" onclick="uploadBoothPhotoAlbum()">🖼️ 相册</button>
+          ${editingPhoto ? '<button type="button" class="del-btn" onclick="deleteBoothPhoto()">删除</button>' : ''}
+        </div>
+      </div>
     </div>
 
     <div class="product-editor">
@@ -629,20 +1138,70 @@ function renderForm(data, title) {
       <div id="productList"></div>
     </div>
 
-    <div class="form-group" style="margin-top:1rem;">
-      <label>联系人</label>
-      <input type="text" id="f_contact" value="${escapeHtml(data.contact || '')}" placeholder="如：陈经理" />
-    </div>
+    <!-- 联系人信息 -->
+    <div class="contact-section-title">📞 联系人信息</div>
+
     <div class="form-row">
       <div class="form-group">
-        <label>联系电话</label>
-        <input type="tel" id="f_phone" value="${escapeHtml(data.phone || '')}" placeholder="电话号码" />
+        <label>联系人1 姓名</label>
+        <input type="text" id="f_contactName" value="${escapeHtml(data.contactName || '')}" placeholder="如：陈经理" />
       </div>
       <div class="form-group">
-        <label>微信号</label>
-        <input type="text" id="f_wechat" value="${escapeHtml(data.wechat || '')}" placeholder="微信号" />
+        <label>联系人1 电话</label>
+        <input type="tel" id="f_phone" value="${escapeHtml(data.phone || '')}" placeholder="电话号码" />
       </div>
     </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>联系人2 姓名<span class="optional">选填</span></label>
+        <input type="text" id="f_contactName2" value="${escapeHtml(data.contactName2 || '')}" placeholder="第二联系人姓名" />
+      </div>
+      <div class="form-group">
+        <label>联系人2 电话<span class="optional">选填</span></label>
+        <input type="tel" id="f_phone2" value="${escapeHtml(data.phone2 || '')}" placeholder="第二联系人电话" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>微信号</label>
+      <input type="text" id="f_wechatId" value="${escapeHtml(data.wechatId || '')}" placeholder="微信号" />
+    </div>
+
+    <!-- 微信二维码 -->
+    <div class="form-group">
+      <label>微信二维码</label>
+      <div class="img-upload-area">
+        <div class="img-preview" id="wechatQrPreview" style="aspect-ratio:1;max-width:180px;">
+          ${editingWechatQr
+            ? '<img src="' + editingWechatQr + '" alt="微信二维码" />'
+            : '<div class="placeholder">📱</div>'}
+        </div>
+        <div class="img-upload-btns" style="max-width:180px;">
+          <button type="button" onclick="uploadWechatQr()">📷 拍照</button>
+          <button type="button" onclick="uploadWechatQrAlbum()">🖼️ 相册</button>
+          ${editingWechatQr ? '<button type="button" class="del-btn" onclick="deleteWechatQr()">删除</button>' : ''}
+        </div>
+      </div>
+    </div>
+
+    <!-- 收款码 -->
+    <div class="form-group">
+      <label>收款码</label>
+      <div class="img-upload-area">
+        <div class="img-preview" id="payQrPreview" style="aspect-ratio:1;max-width:180px;">
+          ${editingPayQr
+            ? '<img src="' + editingPayQr + '" alt="收款码" />'
+            : '<div class="placeholder">💰</div>'}
+        </div>
+        <div class="img-upload-btns" style="max-width:180px;">
+          <button type="button" onclick="uploadPayQr()">📷 拍照</button>
+          <button type="button" onclick="uploadPayQrAlbum()">🖼️ 相册</button>
+          ${editingPayQr ? '<button type="button" class="del-btn" onclick="deletePayQr()">删除</button>' : ''}
+        </div>
+      </div>
+    </div>
+
     <div class="form-group">
       <label>展位地址</label>
       <input type="text" id="f_address" value="${escapeHtml(data.address || '')}" placeholder="展位位置描述" />
@@ -658,9 +1217,190 @@ function renderForm(data, title) {
   document.body.style.overflow = 'hidden';
 }
 
+// ---- 商家封面图上传 ----
+function uploadBoothPhoto() {
+  openImgOption({
+    maxWidth: 600,
+    quality: 0.8,
+    callback: function(base64) {
+      editingPhoto = base64;
+      updatePhotoPreview();
+      updatePhotoBtns();
+    }
+  });
+}
+
+function uploadBoothPhotoAlbum() {
+  var input = document.getElementById('imgFileInput');
+  input.removeAttribute('capture');
+  input.setAttribute('accept', 'image/*');
+  imgUploadContext = {
+    maxWidth: 600,
+    quality: 0.8,
+    callback: function(base64) {
+      editingPhoto = base64;
+      updatePhotoPreview();
+      updatePhotoBtns();
+    }
+  };
+  input.click();
+}
+
+function deleteBoothPhoto() {
+  if (!confirm('确定删除封面图吗？')) return;
+  editingPhoto = '';
+  updatePhotoPreview();
+  updatePhotoBtns();
+}
+
+function updatePhotoPreview() {
+  var el = document.getElementById('photoPreview');
+  if (!el) return;
+  if (editingPhoto) {
+    el.innerHTML = '<img src="' + editingPhoto + '" alt="封面图" />';
+  } else {
+    el.innerHTML = '<div class="placeholder">🏪</div>';
+  }
+}
+
+function updatePhotoBtns() {
+  // 重新渲染整个表单来更新按钮状态比较重，这里用简单方式
+  // 找到按钮区域，添加/移除删除按钮
+  var area = document.querySelector('#photoPreview').nextElementSibling;
+  if (!area) return;
+  var delBtn = area.querySelector('.del-btn');
+  if (editingPhoto && !delBtn) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'del-btn';
+    btn.textContent = '删除';
+    btn.onclick = deleteBoothPhoto;
+    area.appendChild(btn);
+  } else if (!editingPhoto && delBtn) {
+    delBtn.remove();
+  }
+}
+
+// ---- 微信二维码上传 ----
+function uploadWechatQr() {
+  openImgOption({
+    maxWidth: 600,
+    quality: 0.8,
+    callback: function(base64) {
+      editingWechatQr = base64;
+      updateQrPreview('wechatQrPreview', 'wechat', editingWechatQr, '📱');
+      updateQrBtns('wechatQrPreview', 'wechat');
+    }
+  });
+}
+
+function uploadWechatQrAlbum() {
+  var input = document.getElementById('imgFileInput');
+  input.removeAttribute('capture');
+  input.setAttribute('accept', 'image/*');
+  imgUploadContext = {
+    maxWidth: 600,
+    quality: 0.8,
+    callback: function(base64) {
+      editingWechatQr = base64;
+      updateQrPreview('wechatQrPreview', 'wechat', editingWechatQr, '📱');
+      updateQrBtns('wechatQrPreview', 'wechat');
+    }
+  };
+  input.click();
+}
+
+function deleteWechatQr() {
+  if (!confirm('确定删除微信二维码吗？')) return;
+  editingWechatQr = '';
+  updateQrPreview('wechatQrPreview', 'wechat', '', '📱');
+  updateQrBtns('wechatQrPreview', 'wechat');
+}
+
+// ---- 收款码上传 ----
+function uploadPayQr() {
+  openImgOption({
+    maxWidth: 600,
+    quality: 0.8,
+    callback: function(base64) {
+      editingPayQr = base64;
+      updateQrPreview('payQrPreview', 'pay', editingPayQr, '💰');
+      updateQrBtns('payQrPreview', 'pay');
+    }
+  });
+}
+
+function uploadPayQrAlbum() {
+  var input = document.getElementById('imgFileInput');
+  input.removeAttribute('capture');
+  input.setAttribute('accept', 'image/*');
+  imgUploadContext = {
+    maxWidth: 600,
+    quality: 0.8,
+    callback: function(base64) {
+      editingPayQr = base64;
+      updateQrPreview('payQrPreview', 'pay', editingPayQr, '💰');
+      updateQrBtns('payQrPreview', 'pay');
+    }
+  };
+  input.click();
+}
+
+function deletePayQr() {
+  if (!confirm('确定删除收款码吗？')) return;
+  editingPayQr = '';
+  updateQrPreview('payQrPreview', 'pay', '', '💰');
+  updateQrBtns('payQrPreview', 'pay');
+}
+
+function updateQrPreview(previewId, type, src, placeholderEmoji) {
+  var el = document.getElementById(previewId);
+  if (!el) return;
+  if (src) {
+    el.innerHTML = '<img src="' + src + '" alt="二维码" />';
+  } else {
+    el.innerHTML = '<div class="placeholder">' + placeholderEmoji + '</div>';
+  }
+}
+
+function updateQrBtns(previewId, type) {
+  var preview = document.getElementById(previewId);
+  if (!preview) return;
+  var area = preview.nextElementSibling;
+  if (!area) return;
+  var delBtn = area.querySelector('.del-btn');
+  var hasImg = type === 'wechat' ? editingWechatQr : editingPayQr;
+  var delFunc = type === 'wechat' ? deleteWechatQr : deletePayQr;
+  if (hasImg && !delBtn) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'del-btn';
+    btn.textContent = '删除';
+    btn.onclick = delFunc;
+    area.appendChild(btn);
+  } else if (!hasImg && delBtn) {
+    delBtn.remove();
+  }
+}
+
+// ---- 产品列表渲染 ----
 function renderProductList() {
-  const list = document.getElementById('productList');
-  list.innerHTML = editingProducts.map((p, i) => `
+  var list = document.getElementById('productList');
+  list.innerHTML = editingProducts.map(function(p, i) {
+    var imgsHtml = (p.images || []).map(function(img, j) {
+      return '<div class="product-img-item">' +
+        '<img src="' + img + '" alt="" />' +
+        '<button class="img-del" onclick="removeProductImg(' + i + ',' + j + ')">✕</button>' +
+      '</div>';
+    }).join('');
+    var canAdd = (p.images || []).length < 3;
+    if (canAdd) {
+      imgsHtml += '<div class="product-img-add" onclick="addProductImg(' + i + ')">' +
+        '<span class="plus">+</span>' +
+        '<span>添加图片</span>' +
+      '</div>';
+    }
+    return `
     <div class="product-item">
       <div class="p-head">
         <span class="p-name">${escapeHtml(p.name || '产品' + (i+1))}</span>
@@ -692,21 +1432,43 @@ function renderProductList() {
         <label>产品图标（emoji）</label>
         <input type="text" value="${p.emoji || '🎁'}" id="p_emoji_${i}" readonly />
         <div class="emoji-grid">
-          ${['🎁','🥮','🍊','🍷','🍶','🧃','🪵','🍜','🦷','☁️','📦','🏪','🛍️','🔌','📿','🍇','🍎','🥜','🕯️','💧','📣','💻','⚡','🔋','🥣','🌸','🍵','🥟','🧂','👨‍👩‍👧‍👦','🌀','🏺','👛','🍪','🎒'].map(e =>
-            `<button type="button" onclick="setProductEmoji(${i}, '${e}')">${e}</button>`
-          ).join('')}
+          ${['🎁','🥮','🍊','🍷','🍶','🧃','🪵','🍜','🦷','☁️','📦','🏪','🛍️','🔌','📿','🍇','🍎','🥜','🕯️','💧','📣','💻','⚡','🔋','🥣','🌸','🍵','🥟','🧂','👨‍👩‍👧‍👦','🌀','🏺','👛','🍪','🎒'].map(function(e) {
+            return '<button type="button" onclick="setProductEmoji(' + i + ', \'' + e + '\')">' + e + '</button>';
+          }).join('')}
         </div>
       </div>
+      <div class="form-group">
+        <label>产品图片（最多3张）</label>
+        <div class="product-imgs">
+          ${imgsHtml}
+        </div>
+      </div>
+      <div class="form-group">
+        <label>产品详情（详细介绍）</label>
+        <textarea rows="4" onchange="updateProduct(${i}, 'detail', this.value)" placeholder="详细介绍产品特点、使用方法、产地故事等...">${escapeHtml(p.detail || '')}</textarea>
+      </div>
+      <div class="form-group">
+        <label>规格参数</label>
+        <div class="specs-list" id="specsList_${i}">
+          ${(p.specs || []).map(function(s, si) {
+            return '<div class="spec-item">' +
+              '<input type="text" value="' + escapeHtml(s.label || '') + '" placeholder="标签" onchange="updateProductSpec(' + i + ', ' + si + ', \'label\', this.value)" />' +
+              '<input type="text" value="' + escapeHtml(s.value || '') + '" placeholder="值" onchange="updateProductSpec(' + i + ', ' + si + ', \'value\', this.value)" />' +
+              '<button type="button" class="spec-del" onclick="removeProductSpec(' + i + ', ' + si + ')" title="删除">×</button>' +
+            '</div>';
+          }).join('')}
+        </div>
+        <button type="button" class="specs-add-btn" onclick="addProductSpec(${i})">+ 添加规格参数</button>
+      </div>
     </div>
-  `).join('');
+  `;}).join('');
 }
 
 function addProduct() {
-  editingProducts.push({ name: '', desc: '', price: '', unit: '', emoji: '🎁' });
+  editingProducts.push({ name: '', desc: '', price: '', unit: '', emoji: '🎁', images: [], detail: '', specs: [] });
   renderProductList();
-  // 更新标题
-  const h4 = document.querySelector('.product-editor h4');
-  if (h4) h4.innerHTML = `产品列表（${editingProducts.length}个） <button class="btn btn-sm btn-outline" onclick="addProduct()" style="font-size:0.72rem;">+ 添加产品</button>`;
+  var h4 = document.querySelector('.product-editor h4');
+  if (h4) h4.innerHTML = '产品列表（' + editingProducts.length + '个） <button class="btn btn-sm btn-outline" onclick="addProduct()" style="font-size:0.72rem;">+ 添加产品</button>';
 }
 
 function removeProduct(i) {
@@ -733,22 +1495,72 @@ function setEmoji(emoji) {
 }
 
 function onCatChange(catKey) {
-  const cat = CATEGORIES.find(c => c.key === catKey);
+  var cat = CATEGORIES.find(function(c) { return c.key === catKey; });
   if (cat) {
     document.getElementById('f_emoji').value = cat.emoji;
   }
 }
 
+// ---- 产品图片操作 ----
+function addProductImg(productIdx) {
+  if ((editingProducts[productIdx].images || []).length >= 3) {
+    toast('最多3张图片');
+    return;
+  }
+  openImgOption({
+    maxWidth: 600,
+    quality: 0.8,
+    callback: function(base64) {
+      if (!editingProducts[productIdx].images) {
+        editingProducts[productIdx].images = [];
+      }
+      editingProducts[productIdx].images.push(base64);
+      renderProductList();
+    }
+  });
+}
+
+function removeProductImg(productIdx, imgIdx) {
+  if (!confirm('确定删除这张图片吗？')) return;
+  editingProducts[productIdx].images.splice(imgIdx, 1);
+  renderProductList();
+}
+
+// ---- 产品规格参数操作 ----
+function addProductSpec(productIdx) {
+  if (!editingProducts[productIdx].specs) {
+    editingProducts[productIdx].specs = [];
+  }
+  editingProducts[productIdx].specs.push({ label: '', value: '' });
+  renderProductList();
+}
+
+function removeProductSpec(productIdx, specIdx) {
+  if (!confirm('确定删除这条规格参数吗？')) return;
+  editingProducts[productIdx].specs.splice(specIdx, 1);
+  renderProductList();
+}
+
+function updateProductSpec(productIdx, specIdx, field, value) {
+  if (!editingProducts[productIdx].specs) {
+    editingProducts[productIdx].specs = [];
+  }
+  if (!editingProducts[productIdx].specs[specIdx]) {
+    editingProducts[productIdx].specs[specIdx] = { label: '', value: '' };
+  }
+  editingProducts[productIdx].specs[specIdx][field] = value;
+}
+
 // ============= 保存商家 =============
 function saveBooth() {
-  const name = document.getElementById('f_name').value.trim();
+  var name = document.getElementById('f_name').value.trim();
   if (!name) { toast('请填写商家名称'); return; }
 
-  const catKey = document.getElementById('f_cat').value;
-  const cat = CATEGORIES.find(c => c.key === catKey);
+  var catKey = document.getElementById('f_cat').value;
+  var cat = CATEGORIES.find(function(c) { return c.key === catKey; });
 
-  const booth = {
-    id: editingId || (currentData.length > 0 ? Math.max(...currentData.map(b => b.id)) + 1 : 1),
+  var booth = {
+    id: editingId || (currentData.length > 0 ? Math.max.apply(null, currentData.map(function(b) { return b.id; })) + 1 : 1),
     no: document.getElementById('f_no').value.trim(),
     name: name,
     cat: catKey,
@@ -756,15 +1568,20 @@ function saveBooth() {
     emoji: document.getElementById('f_emoji').value || '🏪',
     bg: cat ? cat.bg : 'bg-general',
     desc: document.getElementById('f_desc').value.trim(),
-    products: editingProducts.filter(p => p.name.trim()),
-    contact: document.getElementById('f_contact').value.trim(),
+    photo: editingPhoto || '',
+    products: editingProducts.filter(function(p) { return p.name.trim(); }),
+    contactName: document.getElementById('f_contactName').value.trim(),
     phone: document.getElementById('f_phone').value.trim(),
-    wechat: document.getElementById('f_wechat').value.trim(),
+    contactName2: document.getElementById('f_contactName2').value.trim(),
+    phone2: document.getElementById('f_phone2').value.trim(),
+    wechatId: document.getElementById('f_wechatId').value.trim(),
+    wechatQr: editingWechatQr || '',
+    payQr: editingPayQr || '',
     address: document.getElementById('f_address').value.trim()
   };
 
   if (editingId) {
-    const idx = currentData.findIndex(b => b.id === editingId);
+    var idx = currentData.findIndex(function(b) { return b.id === editingId; });
     if (idx >= 0) currentData[idx] = booth;
     toast('已保存修改');
   } else {
@@ -778,10 +1595,10 @@ function saveBooth() {
 }
 
 function deleteBooth(id) {
-  const booth = currentData.find(b => b.id === id);
+  var booth = currentData.find(function(b) { return b.id === id; });
   if (!booth) return;
-  if (!confirm(`确定删除「${booth.name}」吗？`)) return;
-  currentData = currentData.filter(b => b.id !== id);
+  if (!confirm('确定删除「' + booth.name + '」吗？')) return;
+  currentData = currentData.filter(function(b) { return b.id !== id; });
   saveData();
   renderBoothList();
   toast('已删除');
@@ -802,8 +1619,8 @@ function exportData() {
     toast('没有数据可导出');
     return;
   }
-  const jsonStr = JSON.stringify(currentData, null, 2);
-  const jsContent = `// 第五届茂交会 · 云上展厅数据
+  var jsonStr = JSON.stringify(currentData, null, 2);
+  var jsContent = `// 第五届茂交会 · 云上展厅数据
 // 由后台管理导出，请勿手动修改格式
 // 最后更新：${new Date().toLocaleString('zh-CN')}
 
@@ -821,9 +1638,9 @@ window.CATEGORY_CONFIG = [
 ];
 `;
 
-  const blob = new Blob([jsContent], { type: 'application/javascript' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  var blob = new Blob([jsContent], { type: 'application/javascript' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
   a.href = url;
   a.download = 'data.js';
   document.body.appendChild(a);
@@ -839,26 +1656,24 @@ function importData() {
 }
 
 function handleImport(event) {
-  const file = event.target.files[0];
+  var file = event.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
+  var reader = new FileReader();
   reader.onload = function(e) {
     try {
-      const text = e.target.result;
-      // 尝试解析 JSON
-      let data;
+      var text = e.target.result;
+      var data;
       try {
         data = JSON.parse(text);
       } catch(err) {
-        // 尝试从 JS 文件中提取
-        const match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*?\]);/);
+        var match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*?\]);/);
         if (match) {
           data = eval('(' + match[1] + ')');
         }
       }
       if (Array.isArray(data) && data.length > 0) {
-        if (!confirm(`确定导入 ${data.length} 个商家数据吗？当前数据将被覆盖。`)) return;
-        currentData = data;
+        if (!confirm('确定导入 ' + data.length + ' 个商家数据吗？当前数据将被覆盖。')) return;
+        currentData = migrateBoothData(data);
         saveData();
         renderBoothList();
         toast('✅ 导入成功');
@@ -876,16 +1691,16 @@ function handleImport(event) {
 // ============= 工具 =============
 function escapeHtml(str) {
   if (!str) return '';
-  const div = document.createElement('div');
+  var div = document.createElement('div');
   div.appendChild(document.createTextNode(str));
   return div.innerHTML;
 }
 
 function toast(msg) {
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 1800);
+  setTimeout(function() { t.classList.remove('show'); }, 1800);
 }
 
 // ============= 初始化 =============
@@ -894,7 +1709,7 @@ document.getElementById('pwdInput').addEventListener('keypress', function(e) {
 });
 
 // ============= Tab 切换 =============
-let currentTab = 'booth';
+var currentTab = 'booth';
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(function(t, i) {
@@ -906,21 +1721,50 @@ function switchTab(tab) {
 }
 
 // ============= 站点设置 =============
-const SITE_CFG_KEY = 'maojiaohui_site_config';
-let siteCfg = null;
+var SITE_CFG_KEY = 'maojiaohui_site_config';
+var siteCfg = null;
+var editingHeroBg = '';
 
 function loadSiteConfig() {
   var saved = localStorage.getItem(SITE_CFG_KEY);
   if (saved) {
-    try { siteCfg = JSON.parse(saved); } catch(e) { siteCfg = getDefaultSiteConfig(); }
+    try {
+      siteCfg = migrateSiteConfig(JSON.parse(saved));
+    } catch(e) { siteCfg = getDefaultSiteConfig(); }
   } else {
     siteCfg = getDefaultSiteConfig();
     saveSiteConfigLocal();
   }
 }
 
+/**
+ * 站点配置数据兼容
+ */
+function migrateSiteConfig(cfg) {
+  var c = Object.assign({}, cfg);
+  // organizer字段兼容
+  if (!c.organizer) {
+    c.organizer = {};
+  }
+  if (!c.organizer.contact1 && c.organizer.contact) {
+    c.organizer.contact1 = c.organizer.contact;
+  }
+  if (!c.organizer.phone1 && c.organizer.phone) {
+    c.organizer.phone1 = c.organizer.phone;
+  }
+  if (!c.organizer.contact1) c.organizer.contact1 = '黄嘉梁';
+  if (!c.organizer.phone1) c.organizer.phone1 = '13923740820';
+  if (!c.organizer.contact2) c.organizer.contact2 = '赖仕平';
+  if (!c.organizer.phone2) c.organizer.phone2 = '13925818863';
+  if (!c.organizer.name) c.organizer.name = '东莞市茂名商会秘书处';
+  // hero背景图兼容
+  if (!c.hero) c.hero = {};
+  if (!c.hero.bgImage) c.hero.bgImage = '';
+  return c;
+}
+
 function getDefaultSiteConfig() {
-  return window.SITE_CONFIG ? JSON.parse(JSON.stringify(window.SITE_CONFIG)) : {
+  var defaults = window.SITE_CONFIG ? JSON.parse(JSON.stringify(window.SITE_CONFIG)) : {
     siteName: "茂交会云上展厅",
     siteSubtitle: "东莞市茂名商会第五届",
     themeColor: "#b8362f",
@@ -949,9 +1793,16 @@ function getDefaultSiteConfig() {
       bigBtn: { label: "邀请朋友逛展", icon: "💬" },
       contact: { label: "联系主办方", icon: "📞" }
     },
-    organizer: { name: "东莞市茂名商会秘书处", phone: "0769-****8888", address: "东莞市茂名商会" },
+    organizer: {
+      name: "东莞市茂名商会秘书处",
+      contact1: "黄嘉梁",
+      phone1: "13923740820",
+      contact2: "赖仕平",
+      phone2: "13925818863"
+    },
     share: { title: "第五届茂交会云上展厅", desc: "20+茂名特产商家，手机微信直接逛" }
   };
+  return migrateSiteConfig(defaults);
 }
 
 function saveSiteConfigLocal() {
@@ -960,7 +1811,13 @@ function saveSiteConfigLocal() {
 
 function renderSiteSettings() {
   var cfg = siteCfg;
+  editingHeroBg = cfg.hero.bgImage || '';
   var wrap = document.getElementById('settingsWrap');
+
+  var heroBgPreview = editingHeroBg
+    ? '<img src="' + editingHeroBg + '" alt="背景图" />'
+    : '<div class="placeholder">渐变背景</div>';
+
   wrap.innerHTML = `
     <div class="setting-group">
       <h4>🎨 主题配色</h4>
@@ -1033,8 +1890,17 @@ function renderSiteSettings() {
         </div>
       </div>
       <div class="form-group" style="margin-top:0.6rem;">
-        <label>背景图URL（留空用渐变色）</label>
-        <input type="text" id="sc_bgImage" value="${escapeHtml(cfg.hero.bgImage || '')}" placeholder="https://..." />
+        <label>背景图（支持拍照/相册上传）</label>
+        <div class="img-upload-area">
+          <div class="hero-img-preview" id="heroBgPreview">
+            ${heroBgPreview}
+          </div>
+          <div class="img-upload-btns">
+            <button type="button" onclick="uploadHeroBg()">📷 拍照</button>
+            <button type="button" onclick="uploadHeroBgAlbum()">🖼️ 相册</button>
+            ${editingHeroBg ? '<button type="button" class="del-btn" onclick="deleteHeroBg()">删除</button>' : ''}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1090,9 +1956,25 @@ function renderSiteSettings() {
         <label>主办方名称</label>
         <input type="text" id="sc_orgName" value="${escapeHtml(cfg.organizer.name)}" />
       </div>
-      <div class="form-group">
-        <label>联系电话</label>
-        <input type="tel" id="sc_orgPhone" value="${escapeHtml(cfg.organizer.phone)}" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>联系人1 姓名</label>
+          <input type="text" id="sc_orgContact1" value="${escapeHtml(cfg.organizer.contact1)}" />
+        </div>
+        <div class="form-group">
+          <label>联系人1 电话</label>
+          <input type="tel" id="sc_orgPhone1" value="${escapeHtml(cfg.organizer.phone1)}" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>联系人2 姓名<span class="optional">选填</span></label>
+          <input type="text" id="sc_orgContact2" value="${escapeHtml(cfg.organizer.contact2)}" />
+        </div>
+        <div class="form-group">
+          <label>联系人2 电话<span class="optional">选填</span></label>
+          <input type="tel" id="sc_orgPhone2" value="${escapeHtml(cfg.organizer.phone2)}" />
+        </div>
       </div>
     </div>
 
@@ -1114,6 +1996,70 @@ function renderSiteSettings() {
   `;
 }
 
+// ---- Hero背景图上传 ----
+function uploadHeroBg() {
+  openImgOption({
+    maxWidth: 800,
+    quality: 0.8,
+    callback: function(base64) {
+      editingHeroBg = base64;
+      updateHeroBgPreview();
+      updateHeroBgBtns();
+    }
+  });
+}
+
+function uploadHeroBgAlbum() {
+  var input = document.getElementById('imgFileInput');
+  input.removeAttribute('capture');
+  input.setAttribute('accept', 'image/*');
+  imgUploadContext = {
+    maxWidth: 800,
+    quality: 0.8,
+    callback: function(base64) {
+      editingHeroBg = base64;
+      updateHeroBgPreview();
+      updateHeroBgBtns();
+    }
+  };
+  input.click();
+}
+
+function deleteHeroBg() {
+  if (!confirm('确定删除背景图吗？删除后使用渐变色背景。')) return;
+  editingHeroBg = '';
+  updateHeroBgPreview();
+  updateHeroBgBtns();
+}
+
+function updateHeroBgPreview() {
+  var el = document.getElementById('heroBgPreview');
+  if (!el) return;
+  if (editingHeroBg) {
+    el.innerHTML = '<img src="' + editingHeroBg + '" alt="背景图" />';
+  } else {
+    el.innerHTML = '<div class="placeholder">渐变背景</div>';
+  }
+}
+
+function updateHeroBgBtns() {
+  var preview = document.getElementById('heroBgPreview');
+  if (!preview) return;
+  var area = preview.nextElementSibling;
+  if (!area) return;
+  var delBtn = area.querySelector('.del-btn');
+  if (editingHeroBg && !delBtn) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'del-btn';
+    btn.textContent = '删除';
+    btn.onclick = deleteHeroBg;
+    area.appendChild(btn);
+  } else if (!editingHeroBg && delBtn) {
+    delBtn.remove();
+  }
+}
+
 function saveSiteConfig() {
   var cfg = siteCfg;
   cfg.themeColor = document.getElementById('sc_theme').value;
@@ -1128,12 +2074,15 @@ function saveSiteConfig() {
   cfg.hero.desc = document.getElementById('sc_desc').value;
   cfg.hero.bgColor1 = document.getElementById('sc_bg1').value;
   cfg.hero.bgColor2 = document.getElementById('sc_bg2').value;
-  cfg.hero.bgImage = document.getElementById('sc_bgImage').value;
+  cfg.hero.bgImage = editingHeroBg || '';
   cfg.featuredTitle = document.getElementById('sc_featTitle').value;
   cfg.boothCountLabel = document.getElementById('sc_countLabel').value;
   cfg.noticeText = document.getElementById('sc_notice').value;
   cfg.organizer.name = document.getElementById('sc_orgName').value;
-  cfg.organizer.phone = document.getElementById('sc_orgPhone').value;
+  cfg.organizer.contact1 = document.getElementById('sc_orgContact1').value;
+  cfg.organizer.phone1 = document.getElementById('sc_orgPhone1').value;
+  cfg.organizer.contact2 = document.getElementById('sc_orgContact2').value;
+  cfg.organizer.phone2 = document.getElementById('sc_orgPhone2').value;
   cfg.bottomBar.home.label = document.getElementById('sc_bbHome').value;
   cfg.bottomBar.share.label = document.getElementById('sc_bbShare').value;
   cfg.bottomBar.bigBtn.label = document.getElementById('sc_bbBig').value;
@@ -1165,7 +2114,7 @@ function saveSiteConfig() {
   catBtns.forEach(function(btn, idx) {
     var key = Object.keys(catMap)[idx];
     var emoji = btn.textContent;
-    var name = catMap[key]?.name || '分类';
+    var name = (catMap[key] && catMap[key].name) || '分类';
     var catKey = idx === 0 ? 'all' : ('cat' + idx);
     var bgList = ['bg-mooncake','bg-fruit','bg-wine','bg-agarwood','bg-food','bg-service','bg-general','bg-digital'];
     cfg.categories.push({
@@ -1208,7 +2157,6 @@ function removeCat(idx) {
   if (list.children.length <= 1) { toast('至少保留1个分类'); return; }
   if (!confirm('确定删除这个分类吗？')) return;
   list.children[idx].remove();
-  // 重新编号
   Array.from(list.children).forEach(function(el, i) {
     var inp = el.querySelector('input');
     var btn = el.querySelector('.ce-emoji');
