@@ -1,6 +1,6 @@
 // 第五届茂交会 · 云上展厅数据
 // 由后台管理发布，请勿手动修改格式
-// 最后更新：2026/9/1 05:05:42
+// 最后更新：2026/9/1 05:06:48
 
 window.BOOTH_DATA = [
   {
@@ -518,13 +518,14 @@ window.BOOTH_DATA = [
   },
   {
     "id": 14,
-    "no": "14号",
+    "no": "34号",
     "name": "团圆阁·吴可文",
     "cat": "mooncake",
     "catName": "月饼食品",
     "emoji": "🥮",
     "bg": "bg-mooncake",
     "desc": "团圆阁月饼·家的味道",
+    "photo": "",
     "products": [
       {
         "name": "团圆五仁月饼",
@@ -547,17 +548,14 @@ window.BOOTH_DATA = [
         "specs": []
       }
     ],
-    "contact": "吴可文",
-    "phone": "158****7777",
-    "wechat": "tuanyuange_moon",
-    "address": "东莞市茂名商会茂交会 14号展位",
     "contactName": "吴可文",
+    "phone": "158****7777",
+    "contactName2": "",
+    "phone2": "",
     "wechatId": "tuanyuange_moon",
-    "photo": "",
     "wechatQr": "",
     "payQr": "",
-    "contactName2": "",
-    "phone2": ""
+    "address": "东莞市茂名商会茂交会 34号展位"
   },
   {
     "id": 15,
