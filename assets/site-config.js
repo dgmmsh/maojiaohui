@@ -64,7 +64,10 @@ window.SITE_CONFIG = {
   // ===== 联系方式 =====
   organizer: {
     name: "东莞市茂名商会秘书处",
-    phone: "0769-****8888",
+    contact1: "黄嘉梁",
+    phone1: "13923740820",
+    contact2: "赖仕平",
+    phone2: "13925818863",
     address: "东莞市茂名商会"
   },
 
