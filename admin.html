@@ -949,7 +949,7 @@
       <h3>商家列表</h3>
       <div class="actions">
         <button class="btn btn-sm btn-outline" onclick="syncFromOnline()">🔄 同步线上</button>
-        <button class="btn btn-sm btn-outline" onclick="importData()">📥 导入</button>
+        <button class="btn btn-sm btn-outline" onclick="restoreBackup()">⏮ 恢复数据</button>
         <button class="btn btn-sm btn-primary" onclick="openAddModal()">+ 新增</button>
       </div>
     </div>
@@ -1287,59 +1287,230 @@ function showDashboard() {
   autoSyncOnLoad();
 }
 
-// ============= 自动同步线上数据 =============
+// ============= 自动同步线上数据（合并模式，只增不删） =============
 var _lastSyncTime = 0;
 function autoSyncOnLoad() {
-  // 限制30秒内不重复同步
   var now = Date.now();
   if (now - _lastSyncTime < 30000) return;
   _lastSyncTime = now;
+  doSync(false);
+}
 
-  var url = 'assets/data.js?t=' + now;
+// 统一同步函数：支持 fetch 和 script 两种方式
+function doSync(showHint) {
+  var hint = document.getElementById('syncHint');
+  if (showHint && hint) {
+    hint.style.display = 'block';
+    hint.style.background = '#ddf4ff';
+    hint.style.borderColor = '#54aeff';
+    hint.style.color = '';
+    hint.innerHTML = '⏳ 正在从线上同步数据...';
+  }
 
-  fetch(url)
-    .then(function(response) {
-      if (!response.ok) return null;
-      return response.text();
-    })
-    .then(function(text) {
-      if (!text) return;
-      var match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*?\])\s*[;\n]/);
-      if (!match) {
-        match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*\])/);
+  var url = 'assets/data.js?t=' + Date.now();
+  var useFetch = window.location.protocol === 'https:' || window.location.protocol === 'http:';
+
+  if (useFetch) {
+    // 线上环境：用 fetch
+    fetch(url)
+      .then(function(response) {
+        if (!response.ok) throw new Error('网络错误 ' + response.status);
+        return response.text();
+      })
+      .then(function(text) {
+        handleSyncData(text, showHint);
+      })
+      .catch(function(err) {
+        // fetch 失败，尝试 script 方式
+        syncViaScript(showHint);
+      });
+  } else {
+    // 本地环境(file://)：用 script 标签加载
+    syncViaScript(showHint);
+  }
+}
+
+// 通过 script 标签加载数据（兼容本地 file:// 协议）
+function syncViaScript(showHint) {
+  // 先保存旧的 BOOTH_DATA
+  var oldData = window.BOOTH_DATA;
+  var callbackName = '_syncCallback_' + Date.now();
+  window[callbackName] = function() {
+    var newData = window.BOOTH_DATA;
+    // 恢复旧的（避免影响页面其他部分）
+    var dataStr = JSON.stringify(newData);
+    window[callbackName] = null;
+    delete window[callbackName];
+    handleSyncData('window.BOOTH_DATA = ' + dataStr, showHint);
+  };
+
+  var script = document.createElement('script');
+  script.src = 'assets/data.js?t=' + Date.now() + '&cb=' + callbackName;
+  script.onload = function() {
+    // data.js 没有 callback，直接读取 window.BOOTH_DATA
+    var newData = window.BOOTH_DATA;
+    if (newData && Array.isArray(newData)) {
+      var dataStr = 'window.BOOTH_DATA = ' + JSON.stringify(newData);
+      handleSyncData(dataStr, showHint);
+    } else {
+      showSyncError('无法加载线上数据', showHint);
+    }
+    script.remove();
+  };
+  script.onerror = function() {
+    script.remove();
+    showSyncError('网络错误或文件不存在', showHint);
+  };
+  document.head.appendChild(script);
+}
+
+function showSyncError(msg, showHint) {
+  var hint = document.getElementById('syncHint');
+  if (showHint && hint) {
+    hint.style.background = '#ffebe9';
+    hint.style.borderColor = '#cf222e';
+    hint.style.color = '#cf222e';
+    hint.innerHTML = '❌ 同步失败：' + msg + '。如本地已有数据可继续使用，发布时仍可更新线上。';
+    setTimeout(function() { if (hint) hint.style.display = 'none'; }, 6000);
+  }
+  toast('❌ 同步失败：' + msg);
+}
+
+function handleSyncData(text, showHint) {
+  var match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*?\])\s*[;\n]/);
+  if (!match) {
+    match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*\])/);
+  }
+  if (!match) {
+    showSyncError('数据格式不匹配', showHint);
+    return;
+  }
+
+  var serverData;
+  try {
+    serverData = JSON.parse(match[1]);
+  } catch(e) {
+    showSyncError('数据解析失败', showHint);
+    return;
+  }
+  if (!Array.isArray(serverData) || serverData.length === 0) {
+    showSyncError('线上无数据', showHint);
+    return;
+  }
+
+  var serverMigrated = migrateBoothData(serverData);
+  var result = mergeBoothData(currentData, serverMigrated);
+
+  if (result.added === 0 && result.updated === 0) {
+    var hint = document.getElementById('syncHint');
+    if (showHint && hint) {
+      hint.style.background = '#e8f5e9';
+      hint.style.borderColor = '#4caf50';
+      hint.style.color = '#2e7d52';
+      hint.innerHTML = '✅ 线上数据已是最新（' + currentData.length + '家商家）';
+      setTimeout(function() { if (hint) hint.style.display = 'none'; }, 3000);
+    }
+    return; // 数据一样
+  }
+
+  saveBackup();
+  saveData();
+  renderBoothList();
+  updateStats();
+
+  var msg = '✅ 同步完成（当前' + currentData.length + '家商家';
+  if (result.added > 0) msg += '，新增' + result.added + '家';
+  if (result.updated > 0) msg += '，更新' + result.updated + '家';
+  msg += '）';
+
+  var hint = document.getElementById('syncHint');
+  if (hint) {
+    hint.style.background = '#e8f5e9';
+    hint.style.borderColor = '#4caf50';
+    hint.style.color = '#2e7d52';
+    hint.innerHTML = msg;
+    setTimeout(function() { if (hint) hint.style.display = 'none'; }, 5000);
+  }
+  toast(msg);
+}
+
+// ============= 数据合并：只增不删 =============
+function mergeBoothData(localArr, serverArr) {
+  var added = 0;
+  var updated = 0;
+  var localIds = {};
+
+  // 建立本地数据索引
+  localArr.forEach(function(b) { localIds[b.id] = b; });
+
+  // 遍历线上数据
+  serverArr.forEach(function(srv) {
+    if (localIds[srv.id]) {
+      // 线上有、本地也有：用线上数据更新本地（线上通常是最新发布的）
+      // 但保留本地可能有的新字段
+      var local = localIds[srv.id];
+      var merged = Object.assign({}, local, srv);
+      // 确保产品不丢失
+      if (!srv.products || srv.products.length === 0) {
+        merged.products = local.products;
       }
-      if (!match) return;
+      var localIdx = localArr.indexOf(local);
+      if (localIdx >= 0) {
+        localArr[localIdx] = merged;
+        updated++;
+      }
+    } else {
+      // 线上有、本地没有：添加进来
+      localArr.push(srv);
+      added++;
+    }
+  });
 
-      var serverData;
-      try {
-        serverData = JSON.parse(match[1]);
-      } catch(e) { return; }
-      if (!Array.isArray(serverData) || serverData.length === 0) return;
+  return { added: added, updated: updated };
+}
 
-      var serverMigrated = migrateBoothData(serverData);
+// ============= 数据备份与恢复 =============
+function saveBackup() {
+  var data = localStorage.getItem(STORAGE_KEY);
+  if (data) {
+    var timestamp = new Date().toLocaleString('zh-CN');
+    var backup = JSON.parse(localStorage.getItem(STORAGE_KEY + '_backups') || '[]');
+    backup.unshift({ time: timestamp, data: data });
+    if (backup.length > 5) backup = backup.slice(0, 5); // 保留最近5次
+    localStorage.setItem(STORAGE_KEY + '_backups', JSON.stringify(backup));
+  }
+}
 
-      // 和本地数据比较
-      var localJson = JSON.stringify(currentData);
-      var serverJson = JSON.stringify(serverMigrated);
-
-      if (localJson === serverJson) return; // 数据一样，不同步
-
-      // 本地有数据但和线上不同
-      // 备份本地数据
-      localStorage.setItem(STORAGE_KEY + '_backup', localJson);
-
-      // 用线上数据覆盖本地
-      currentData = serverMigrated;
-      saveData();
-      renderBoothList();
-      updateStats();
-
-      toast('🔄 已自动同步线上数据（' + serverMigrated.length + '家商家）');
-    })
-    .catch(function(err) {
-      // 网络错误，静默处理，继续用本地数据
-      console.log('自动同步失败：', err.message);
-    });
+function restoreBackup() {
+  var backupStr = localStorage.getItem(STORAGE_KEY + '_backups');
+  if (!backupStr) {
+    toast('没有可恢复的备份');
+    return;
+  }
+  var backups = JSON.parse(backupStr);
+  if (backups.length === 0) {
+    toast('没有可恢复的备份');
+    return;
+  }
+  // 列出备份让用户选择
+  var msg = '选择要恢复的备份：\n\n';
+  backups.forEach(function(b, i) {
+    msg += (i + 1) + '. ' + b.time + '\n';
+  });
+  msg += '\n输入序号恢复（1-' + backups.length + '），取消请留空';
+  var input = prompt(msg);
+  if (!input) return;
+  var idx = parseInt(input) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= backups.length) {
+    toast('序号无效');
+    return;
+  }
+  var restored = JSON.parse(backups[idx].data);
+  currentData = migrateBoothData(restored);
+  saveData();
+  renderBoothList();
+  updateStats();
+  toast('✅ 已恢复到 ' + backups[idx].time);
 }
 
 // ============= 数据加载与兼容 =============
@@ -1358,59 +1529,9 @@ function loadData() {
   }
 }
 
-// ============= 从线上同步数据 =============
+// ============= 从线上同步数据（合并模式，只增不删） =============
 function syncFromOnline() {
-  var hint = document.getElementById('syncHint');
-  if (hint) hint.style.display = 'block';
-
-  // 加时间戳防止缓存
-  var url = 'assets/data.js?t=' + Date.now();
-
-  fetch(url)
-    .then(function(response) {
-      if (!response.ok) throw new Error('网络错误 ' + response.status);
-      return response.text();
-    })
-    .then(function(text) {
-      var match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*?\])\s*[;\n]/);
-      if (!match) {
-        match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*\])/);
-      }
-      if (match) {
-        var data;
-        try {
-          data = JSON.parse(match[1]);
-        } catch(e) {
-          throw new Error('数据解析失败');
-        }
-        if (Array.isArray(data) && data.length > 0) {
-          currentData = migrateBoothData(data);
-          saveData();
-          renderBoothList();
-          updateStats();
-          if (hint) {
-            hint.style.background = '#e8f5e9';
-            hint.style.borderColor = '#4caf50';
-            hint.style.color = '#2e7d52';
-            hint.innerHTML = '✅ 已同步线上数据（' + data.length + '家商家），本地数据已更新';
-            setTimeout(function() { if (hint) hint.style.display = 'none'; }, 4000);
-          }
-          toast('✅ 同步成功：' + data.length + '家商家');
-          return;
-        }
-      }
-      throw new Error('未找到数据');
-    })
-    .catch(function(err) {
-      if (hint) {
-        hint.style.background = '#ffebe9';
-        hint.style.borderColor = '#cf222e';
-        hint.style.color = '#cf222e';
-        hint.innerHTML = '❌ 同步失败：' + err.message;
-        setTimeout(function() { if (hint) hint.style.display = 'none'; }, 5000);
-      }
-      toast('❌ 同步失败：' + err.message);
-    });
+  doSync(true);
 }
 
 /**
@@ -2113,6 +2234,7 @@ function saveBooth() {
   };
 
   if (editingId) {
+    saveBackup();
     var idx = currentData.findIndex(function(b) { return b.id === editingId; });
     if (idx >= 0) currentData[idx] = booth;
     toast('已保存修改');
@@ -2129,11 +2251,12 @@ function saveBooth() {
 function deleteBooth(id) {
   var booth = currentData.find(function(b) { return b.id === id; });
   if (!booth) return;
-  if (!confirm('确定删除「' + booth.name + '」吗？')) return;
+  if (!confirm('确定删除「' + booth.name + '」吗？此操作不可撤销（可通过"恢复数据"找回）')) return;
+  saveBackup();
   currentData = currentData.filter(function(b) { return b.id !== id; });
   saveData();
   renderBoothList();
-  toast('已删除');
+  toast('已删除（可通过「恢复数据」找回）');
 }
 
 function closeModal() {
@@ -2509,6 +2632,22 @@ function renderSiteSettings() {
     </div>
 
     <div class="setting-group">
+      <h4>📺 推广信息流设置</h4>
+      <div class="form-group">
+        <label>滚动速度（秒数越大越慢，建议 60~300）</label>
+        <input type="number" id="sc_promoSpeed" value="${(cfg.promo && cfg.promo.speed) || 90}" min="30" max="300" step="10" />
+        <p class="hint-text">当前速度：${(cfg.promo && cfg.promo.speed) || 90}秒 / 60秒=快 / 90秒=中 / 180秒=慢</p>
+      </div>
+      <div class="form-group">
+        <label>自动滚动</label>
+        <select id="sc_promoAuto">
+          <option value="true" ${(cfg.promo && cfg.promo.autoPlay !== false) ? 'selected' : ''}>开启自动滚动</option>
+          <option value="false" ${(cfg.promo && cfg.promo.autoPlay === false) ? 'selected' : ''}>关闭（手动滑动）</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="setting-group">
       <h4>📞 联系方式</h4>
       <div class="form-group">
         <label>主办方名称</label>
@@ -2629,6 +2768,14 @@ function saveSiteConfig() {
   cfg.bottomBar.share.label = document.getElementById('sc_bbShare').value;
   cfg.bottomBar.bigBtn.label = document.getElementById('sc_bbBig').value;
   cfg.bottomBar.contact.label = document.getElementById('sc_bbContact').value;
+
+  // 推广信息流设置
+  var promoSpeed = parseInt(document.getElementById('sc_promoSpeed').value);
+  if (isNaN(promoSpeed) || promoSpeed < 30) promoSpeed = 90;
+  if (promoSpeed > 300) promoSpeed = 300;
+  if (!cfg.promo) cfg.promo = {};
+  cfg.promo.speed = promoSpeed;
+  cfg.promo.autoPlay = document.getElementById('sc_promoAuto').value === 'true';
 
   // 统计数字
   var statItems = document.querySelectorAll('[data-stat]');

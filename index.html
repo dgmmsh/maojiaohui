@@ -531,7 +531,7 @@
       display: flex;
       gap: 0.6rem;
       white-space: nowrap;
-      animation: promoScroll 60s linear infinite;
+      animation: promoScroll 90s linear infinite;
       width: max-content;
     }
     .promo-track:hover {
@@ -1153,6 +1153,19 @@ function renderPromoStream() {
       '</div>';
   }).join('');
   track.innerHTML = html + html;
+
+  // 从配置读取滚动速度
+  var speed = 90;
+  var autoPlay = true;
+  try {
+    var cfg = window.SITE_CONFIG || {};
+    if (cfg.promo && cfg.promo.speed) speed = cfg.promo.speed;
+    if (cfg.promo && cfg.promo.autoPlay === false) autoPlay = false;
+  } catch(e) {}
+  track.style.animationDuration = speed + 's';
+  if (!autoPlay) {
+    track.style.animationPlayState = 'paused';
+  }
 }
 
 // ============= 渲染展位卡片 =============
