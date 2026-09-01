@@ -1296,7 +1296,7 @@ function autoSyncOnLoad() {
   doSync(false);
 }
 
-// 统一同步函数：支持 fetch 和 script 两种方式
+// 统一同步函数：从 GitHub API 直接拉取最新线上数据
 function doSync(showHint) {
   var hint = document.getElementById('syncHint');
   if (showHint && hint) {
@@ -1304,64 +1304,91 @@ function doSync(showHint) {
     hint.style.background = '#ddf4ff';
     hint.style.borderColor = '#54aeff';
     hint.style.color = '';
-    hint.innerHTML = '⏳ 正在从线上同步数据...';
+    hint.innerHTML = '⏳ 正在从 GitHub 拉取最新数据...';
   }
 
-  var url = 'assets/data.js?t=' + Date.now();
-  var useFetch = window.location.protocol === 'https:' || window.location.protocol === 'http:';
+  // 读取 GitHub 配置
+  var gh = loadGithubConfig();
 
-  if (useFetch) {
-    // 线上环境：用 fetch
-    fetch(url)
+  if (gh && gh.owner && gh.repo) {
+    // 方式1：用 GitHub API 直接拉取线上文件内容（最可靠）
+    var apiUrl = 'https://api.github.com/repos/' + gh.owner + '/' + gh.repo + '/contents/assets/data.js?ref=' + (gh.branch || 'main');
+    var headers = { 'Accept': 'application/vnd.github.v3+json' };
+    if (gh.token) headers['Authorization'] = 'token ' + gh.token;
+
+    fetch(apiUrl, { headers: headers })
       .then(function(response) {
-        if (!response.ok) throw new Error('网络错误 ' + response.status);
-        return response.text();
+        if (!response.ok) throw new Error('GitHub API ' + response.status);
+        return response.json();
       })
-      .then(function(text) {
+      .then(function(data) {
+        // content 是 base64 编码的，解码
+        var binary = atob(data.content.replace(/\n/g, ''));
+        // 转成 UTF-8 文本
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        var text = new TextDecoder('utf-8').decode(bytes);
         handleSyncData(text, showHint);
       })
       .catch(function(err) {
-        // fetch 失败，尝试 script 方式
-        syncViaScript(showHint);
+        // GitHub API 失败，尝试 raw URL
+        syncViaRawUrl(gh, showHint);
       });
   } else {
-    // 本地环境(file://)：用 script 标签加载
-    syncViaScript(showHint);
+    // 没有配置 GitHub 信息，尝试相对路径
+    syncViaRelative(showHint);
   }
 }
 
-// 通过 script 标签加载数据（兼容本地 file:// 协议）
-function syncViaScript(showHint) {
-  // 先保存旧的 BOOTH_DATA
-  var oldData = window.BOOTH_DATA;
-  var callbackName = '_syncCallback_' + Date.now();
-  window[callbackName] = function() {
-    var newData = window.BOOTH_DATA;
-    // 恢复旧的（避免影响页面其他部分）
-    var dataStr = JSON.stringify(newData);
-    window[callbackName] = null;
-    delete window[callbackName];
-    handleSyncData('window.BOOTH_DATA = ' + dataStr, showHint);
-  };
+// 方式2：通过 raw.githubusercontent.com 拉取
+function syncViaRawUrl(gh, showHint) {
+  var rawUrl = 'https://raw.githubusercontent.com/' + gh.owner + '/' + gh.repo + '/' + (gh.branch || 'main') + '/assets/data.js?t=' + Date.now();
 
-  var script = document.createElement('script');
-  script.src = 'assets/data.js?t=' + Date.now() + '&cb=' + callbackName;
-  script.onload = function() {
-    // data.js 没有 callback，直接读取 window.BOOTH_DATA
-    var newData = window.BOOTH_DATA;
-    if (newData && Array.isArray(newData)) {
-      var dataStr = 'window.BOOTH_DATA = ' + JSON.stringify(newData);
-      handleSyncData(dataStr, showHint);
-    } else {
-      showSyncError('无法加载线上数据', showHint);
-    }
-    script.remove();
-  };
-  script.onerror = function() {
-    script.remove();
-    showSyncError('网络错误或文件不存在', showHint);
-  };
-  document.head.appendChild(script);
+  fetch(rawUrl)
+    .then(function(response) {
+      if (!response.ok) throw new Error('raw ' + response.status);
+      return response.text();
+    })
+    .then(function(text) {
+      handleSyncData(text, showHint);
+    })
+    .catch(function(err) {
+      // raw 也失败，尝试相对路径
+      syncViaRelative(showHint);
+    });
+}
+
+// 方式3：相对路径（仅在线上 GitHub Pages 同域下有效）
+function syncViaRelative(showHint) {
+  var relUrl = 'assets/data.js?t=' + Date.now();
+  var isOnline = window.location.protocol === 'https:' || window.location.protocol === 'http:';
+
+  if (isOnline) {
+    fetch(relUrl)
+      .then(function(response) {
+        if (!response.ok) throw new Error('网络错误');
+        return response.text();
+      })
+      .then(function(text) { handleSyncData(text, showHint); })
+      .catch(function(err) { showSyncError(err.message, showHint); });
+  } else {
+    // 本地文件：用 script 标签
+    var script = document.createElement('script');
+    script.src = relUrl;
+    script.onload = function() {
+      if (window.BOOTH_DATA && Array.isArray(window.BOOTH_DATA)) {
+        handleSyncData('window.BOOTH_DATA = ' + JSON.stringify(window.BOOTH_DATA), showHint);
+      } else {
+        showSyncError('无法加载本地数据', showHint);
+      }
+      script.remove();
+    };
+    script.onerror = function() {
+      script.remove();
+      showSyncError('请先在「发布设置」中填写 GitHub 仓库信息', showHint);
+    };
+    document.head.appendChild(script);
+  }
 }
 
 function showSyncError(msg, showHint) {
@@ -1370,7 +1397,7 @@ function showSyncError(msg, showHint) {
     hint.style.background = '#ffebe9';
     hint.style.borderColor = '#cf222e';
     hint.style.color = '#cf222e';
-    hint.innerHTML = '❌ 同步失败：' + msg + '。如本地已有数据可继续使用，发布时仍可更新线上。';
+    hint.innerHTML = '❌ 同步失败：' + msg;
     setTimeout(function() { if (hint) hint.style.display = 'none'; }, 6000);
   }
   toast('❌ 同步失败：' + msg);
@@ -1410,7 +1437,7 @@ function handleSyncData(text, showHint) {
       hint.innerHTML = '✅ 线上数据已是最新（' + currentData.length + '家商家）';
       setTimeout(function() { if (hint) hint.style.display = 'none'; }, 3000);
     }
-    return; // 数据一样
+    return;
   }
 
   saveBackup();
