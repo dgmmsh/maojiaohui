@@ -1,6 +1,6 @@
 // 第五届茂交会 · 云上展厅数据
 // 由后台管理发布，请勿手动修改格式
-// 最后更新：2026/9/1 09:53:34
+// 最后更新：2026/9/1 09:55:37
 
 window.BOOTH_DATA = [
   {
@@ -1162,3 +1162,6 @@ window.CATEGORY_CONFIG = [
   { key: "service", name: "生活服务", emoji: "☁️", bg: "bg-service" },
   { key: "general", name: "综合", emoji: "🏪", bg: "bg-general" }
 ];
+
+// 现场风采留言板数据
+window.WALL_DATA = [];
