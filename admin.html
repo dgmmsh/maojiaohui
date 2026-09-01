@@ -1723,7 +1723,7 @@ function renderWallList() {
 function openWallAdd() {
   editingWallId = null;
   var html = generateWallFormHTML({});
-  showModal(html);
+  showModal(html, '新增现场风采');
 }
 
 function openWallEdit(id) {
@@ -1731,7 +1731,7 @@ function openWallEdit(id) {
   if (!w) return;
   editingWallId = id;
   var html = generateWallFormHTML(w);
-  showModal(html);
+  showModal(html, '编辑现场风采');
 }
 
 var _wallImages = []; // 临时存储当前编辑的多张图片
@@ -1755,12 +1755,7 @@ function generateWallFormHTML(w) {
     }).join('');
   }
 
-  return '<div class="modal-header">' +
-    '<h3>' + (editingWallId ? '编辑风采' : '新增风采') + '</h3>' +
-    '<button class="modal-close" onclick="closeModal()">✕</button>' +
-  '</div>' +
-  '<div class="modal-body">' +
-    '<div class="form-group">' +
+  return '<div class="form-group">' +
       '<label>标题</label>' +
       '<input type="text" id="wallTitle" value="' + escapeHtml(w.title || '') + '" placeholder="如：茂交会开幕仪式" />' +
     '</div>' +
@@ -1787,11 +1782,10 @@ function generateWallFormHTML(w) {
       '<label>日期</label>' +
       '<input type="date" id="wallDate" value="' + escapeHtml(w.date || '') + '" />' +
     '</div>' +
-  '</div>' +
-  '<div class="modal-footer">' +
-    '<button class="btn btn-outline" onclick="closeModal()">取消</button>' +
-    '<button class="btn btn-primary" onclick="saveWallItem()">💾 保存</button>' +
-  '</div>';
+    '<div class="form-actions">' +
+      '<button class="btn btn-secondary" onclick="closeModal()">取消</button>' +
+      '<button class="btn btn-primary" onclick="saveWallItem()">💾 保存</button>' +
+    '</div>';
 }
 
 function wallPickCamera() {
@@ -2720,6 +2714,19 @@ function deleteBooth(id) {
 function closeModal() {
   document.getElementById('editModal').classList.remove('show');
   document.body.style.overflow = '';
+}
+
+// 通用弹窗：用于现场风采等模块
+function showModal(html, title) {
+  var body = document.getElementById('modalBody');
+  if (!body) return;
+  body.innerHTML = html;
+  if (title) {
+    var titleEl = document.getElementById('modalTitle');
+    if (titleEl) titleEl.textContent = title;
+  }
+  document.getElementById('editModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 
 document.getElementById('editModal').addEventListener('click', function(e) {

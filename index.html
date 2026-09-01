@@ -724,19 +724,26 @@
     }
     .wall-gallery-dot.active { background: #fff; }
 
-    /* ---- 现场风采留言板 ---- */
-    .wall-section { padding: 1rem 0.7rem 0.5rem; }
-    .wall-header { text-align: center; margin-bottom: 0.8rem; }
+    /* ---- 现场风采相册 ---- */
+    .wall-section { padding: 1rem 0 0.5rem; }
+    .wall-header { text-align: center; margin-bottom: 0.6rem; padding: 0 1rem; }
     .wall-header h2 { font-size: 1.1rem; font-weight: 800; color: var(--ink); }
     .wall-header p { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
-    .wall-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+    .wall-grid {
+      display: flex; gap: 0.8rem; overflow-x: auto; scroll-snap-type: x mandatory;
+      padding: 0 1rem 0.5rem; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    }
+    .wall-grid::-webkit-scrollbar { display: none; }
+    .wall-grid-empty { padding: 1.5rem 1rem; text-align: center; color: var(--muted); font-size: 0.8rem; }
     .wall-card {
+      flex-shrink: 0; width: 80vw; max-width: 300px;
+      scroll-snap-align: start;
       background: var(--card); border-radius: 0.6rem; overflow: hidden;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.2s;
     }
     .wall-card:active { transform: scale(0.97); }
     .wall-card-img {
-      width: 100%; aspect-ratio: 4/3;
+      width: 100%; aspect-ratio: 3/2;
       background-size: cover; background-position: center; background-color: var(--bg2);
       position: relative; overflow: hidden;
     }
@@ -774,7 +781,7 @@
     }
     .wall-more-btn:active { background: var(--bg2); }
     .wall-empty {
-      grid-column: span 2; text-align: center; padding: 1.5rem 0;
+      flex: 1; text-align: center; padding: 1.5rem 0;
       color: var(--muted); font-size: 0.8rem;
     }
   </style>
@@ -818,13 +825,13 @@
 
   <!-- Category Bar -->
   <nav class="cat-bar" id="catBar">
-    <div class="cat-chip active" data-cat="all">全部</div>
-    <div class="cat-chip" data-cat="mooncake">月饼食品</div>
-    <div class="cat-chip" data-cat="fruit">水果生鲜</div>
-    <div class="cat-chip" data-cat="wine">酒水饮料</div>
-    <div class="cat-chip" data-cat="agarwood">沉香文化</div>
-    <div class="cat-chip" data-cat="food">餐饮美食</div>
-    <div class="cat-chip" data-cat="service">生活服务</div>
+    <div class="cat-chip active" data-cat="all" onclick="selectCategory('all', this)">全部</div>
+    <div class="cat-chip" data-cat="mooncake" onclick="selectCategory('mooncake', this)">月饼食品</div>
+    <div class="cat-chip" data-cat="fruit" onclick="selectCategory('fruit', this)">水果生鲜</div>
+    <div class="cat-chip" data-cat="wine" onclick="selectCategory('wine', this)">酒水饮料</div>
+    <div class="cat-chip" data-cat="agarwood" onclick="selectCategory('agarwood', this)">沉香文化</div>
+    <div class="cat-chip" data-cat="food" onclick="selectCategory('food', this)">餐饮美食</div>
+    <div class="cat-chip" data-cat="service" onclick="selectCategory('service', this)">生活服务</div>
   </nav>
 
   <!-- Featured -->
@@ -891,7 +898,7 @@
     </div>
   </div>
 
-  <!-- 现场风采留言板 -->
+  <!-- 现场风采相册 -->
   <section class="wall-section" id="wallSection">
     <div class="wall-header">
       <h2>📸 现场风采</h2>
@@ -1278,7 +1285,7 @@ function applySiteConfig() {
   var catBar = document.getElementById('catBar');
   if (catBar && cfg.categories) {
     catBar.innerHTML = cfg.categories.map(function(c, i) {
-      return '<div class="cat-chip ' + (i === 0 ? 'active' : '') + '" data-cat="' + c.key + '">' + (c.emoji || '') + ' ' + c.name + '</div>';
+      return '<div class="cat-chip ' + (i === 0 ? 'active' : '') + '" data-cat="' + c.key + '" onclick="selectCategory(\'' + c.key + '\', this)">' + (c.emoji || '') + ' ' + c.name + '</div>';
     }).join('');
   }
 
@@ -1388,14 +1395,20 @@ function renderBooths(cat) {
 }
 
 // ============= 分类切换 =============
+function selectCategory(cat, chipEl) {
+  document.querySelectorAll('.cat-chip').forEach(function(c) { c.classList.remove('active'); });
+  if (chipEl) chipEl.classList.add('active');
+  renderBooths(cat);
+  var gridTop = document.getElementById('boothGrid').getBoundingClientRect().top + window.scrollY - 100;
+  window.scrollTo({ top: gridTop, behavior: 'smooth' });
+}
+
+// 备用：事件委托（以防 inline onclick 被覆盖）
 document.getElementById('catBar').addEventListener('click', function(e) {
   var chip = e.target.closest('.cat-chip');
   if (!chip) return;
-  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-  chip.classList.add('active');
-  renderBooths(chip.dataset.cat);
-  var gridTop = document.getElementById('boothGrid').getBoundingClientRect().top + window.scrollY - 100;
-  window.scrollTo({ top: gridTop, behavior: 'smooth' });
+  if (chip.onclick) return; // 如果已有 inline onclick 就不重复处理
+  selectCategory(chip.dataset.cat, chip);
 });
 
 // ============= 详情弹窗 =============
@@ -2185,7 +2198,7 @@ function renderWall() {
     return;
   }
 
-  var list = _wallShowAll ? WALL_DATA : WALL_DATA.slice(0, 4);
+  var list = WALL_DATA;
   grid.innerHTML = list.map(function(w) {
     var imgs = getWallImages(w);
 
@@ -2243,8 +2256,51 @@ function renderWall() {
     }
   });
 
+  // 隐藏"查看全部"按钮（横向滚动不需要）
   var moreBtn = document.getElementById('wallMore');
-  if (moreBtn) moreBtn.style.display = (!_wallShowAll && WALL_DATA.length > 4) ? 'block' : 'none';
+  if (moreBtn) moreBtn.style.display = 'none';
+
+  // 启动横向自动滚动
+  startWallAutoScroll();
+}
+
+// 相册横向自动滚动
+var _wallScrollTimer = null;
+function startWallAutoScroll() {
+  if (_wallScrollTimer) clearInterval(_wallScrollTimer);
+  var grid = document.getElementById('wallGrid');
+  if (!grid) return;
+
+  _wallScrollTimer = setInterval(function() {
+    if (!grid || !grid.children.length) return;
+    // 用户手动滚动时暂停
+    if (grid.dataset.userScrolling === '1') return;
+
+    var maxScroll = grid.scrollWidth - grid.clientWidth;
+    if (maxScroll <= 0) return;
+
+    var current = grid.scrollLeft;
+    var cardWidth = grid.children[0].offsetWidth + 13; // card + gap
+    var target = current + cardWidth;
+
+    if (target >= maxScroll) {
+      // 滚到底了，回到开头
+      grid.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      grid.scrollTo({ left: target, behavior: 'smooth' });
+    }
+  }, 4000);
+
+  // 用户触摸时暂停
+  grid.addEventListener('touchstart', function() {
+    grid.dataset.userScrolling = '1';
+    clearTimeout(grid._resumeTimer);
+  }, { passive: true });
+  grid.addEventListener('touchend', function() {
+    var g = grid;
+    clearTimeout(g._resumeTimer);
+    g._resumeTimer = setTimeout(function() { g.dataset.userScrolling = '0'; }, 3000);
+  }, { passive: true });
 }
 
 function startWallSlideshow(wallId, total) {
