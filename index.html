@@ -1754,36 +1754,64 @@ function closeImageViewer() {
 
 // ============= 欢迎语音+背景音乐 =============
 var _audioEnabled = true;
-var _welcomeSpeech = null;
 var _bgMusic = null;
+var _audioStarted = false;
 
 function initAudio() {
   _bgMusic = document.getElementById('bgMusic');
-  // 尝试播放背景音乐
-  if (_bgMusic) {
-    _bgMusic.volume = 0.3;
-    _bgMusic.play().catch(function(e) {
-      // 浏览器自动播放策略，需要用户交互后才能播放
-      console.log('等待用户交互后播放音乐');
+
+  // 从配置读取音乐URL
+  try {
+    var cfg = window.SITE_CONFIG || {};
+    if (cfg.music && cfg.music.url) {
+      _bgMusic.src = cfg.music.url;
+    }
+    if (cfg.music && cfg.music.volume) {
+      _bgMusic.volume = cfg.music.volume;
+    } else {
+      _bgMusic.volume = 0.3;
+    }
+  } catch(e) { _bgMusic.volume = 0.3; }
+
+  // 浏览器禁止自动播放，必须等用户首次交互
+  var startAudio = function() {
+    if (_audioStarted) return;
+    _audioStarted = true;
+
+    // 1. 先播欢迎语音
+    if (_audioEnabled && 'speechSynthesis' in window) {
+      try {
+        var utterance = new SpeechSynthesisUtterance('欢迎来到东莞茂商第五届茂交会');
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        speechSynthesis.speak(utterance);
+      } catch(e) {}
+    }
+
+    // 2. 欢迎语音结束后播背景音乐
+    setTimeout(function() {
+      if (_bgMusic && _audioEnabled && _bgMusic.src) {
+        _bgMusic.play().catch(function(e) {
+          console.log('背景音乐播放失败:', e);
+        });
+      }
+    }, 3000);
+  };
+
+  // 监听用户首次交互（点击/触摸/按键）
+  document.addEventListener('click', startAudio, { once: true });
+  document.addEventListener('touchstart', startAudio, { once: true });
+  document.addEventListener('keydown', startAudio, { once: true });
+
+  // 也监听语音合成结束事件
+  if ('speechSynthesis' in window) {
+    speechSynthesis.addEventListener('end', function() {
+      if (_bgMusic && _audioEnabled && _bgMusic.src) {
+        _bgMusic.play().catch(function(){});
+      }
     });
   }
-  // 欢迎语音 - 使用 SpeechSynthesis API
-  if (_audioEnabled && 'speechSynthesis' in window) {
-    setTimeout(function() {
-      var utterance = new SpeechSynthesisUtterance('欢迎来到东莞茂商第五届茂交会');
-      utterance.lang = 'zh-CN';
-      utterance.rate = 0.9;
-      utterance.pitch = 1.0;
-      speechSynthesis.speak(utterance);
-    }, 500);
-  }
-  // 用户首次交互后启动音乐
-  document.addEventListener('click', function oncePlay() {
-    if (_bgMusic && _audioEnabled) {
-      _bgMusic.play().catch(function(){});
-    }
-    document.removeEventListener('click', oncePlay);
-  }, { once: true });
 }
 
 function toggleAudio() {
@@ -1792,7 +1820,7 @@ function toggleAudio() {
   if (_audioEnabled) {
     btn.classList.remove('muted');
     btn.textContent = '🔊';
-    if (_bgMusic) _bgMusic.play().catch(function(){});
+    if (_bgMusic && _bgMusic.src) _bgMusic.play().catch(function(){});
     if ('speechSynthesis' in window) speechSynthesis.resume();
   } else {
     btn.classList.add('muted');
