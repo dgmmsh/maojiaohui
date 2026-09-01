@@ -948,9 +948,14 @@
     <div class="section-head">
       <h3>商家列表</h3>
       <div class="actions">
+        <button class="btn btn-sm btn-outline" onclick="syncFromOnline()">🔄 同步线上</button>
         <button class="btn btn-sm btn-outline" onclick="importData()">📥 导入</button>
         <button class="btn btn-sm btn-primary" onclick="openAddModal()">+ 新增</button>
       </div>
+    </div>
+
+    <div id="syncHint" style="display:none; padding:0.6rem 0.9rem; margin-bottom:0.5rem; background:#ddf4ff; border:1px solid #54aeff; border-radius:8px; font-size:0.78rem; color:var(--accent);">
+      ⏳ 正在从线上同步数据...
     </div>
 
     <div class="booth-list" id="boothList">
@@ -1278,6 +1283,63 @@ function showDashboard() {
   loadSiteConfig();
   renderBoothList();
   updateStats();
+  // 自动从线上同步最新数据
+  autoSyncOnLoad();
+}
+
+// ============= 自动同步线上数据 =============
+var _lastSyncTime = 0;
+function autoSyncOnLoad() {
+  // 限制30秒内不重复同步
+  var now = Date.now();
+  if (now - _lastSyncTime < 30000) return;
+  _lastSyncTime = now;
+
+  var url = 'assets/data.js?t=' + now;
+
+  fetch(url)
+    .then(function(response) {
+      if (!response.ok) return null;
+      return response.text();
+    })
+    .then(function(text) {
+      if (!text) return;
+      var match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*?\])\s*[;\n]/);
+      if (!match) {
+        match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*\])/);
+      }
+      if (!match) return;
+
+      var serverData;
+      try {
+        serverData = JSON.parse(match[1]);
+      } catch(e) { return; }
+      if (!Array.isArray(serverData) || serverData.length === 0) return;
+
+      var serverMigrated = migrateBoothData(serverData);
+
+      // 和本地数据比较
+      var localJson = JSON.stringify(currentData);
+      var serverJson = JSON.stringify(serverMigrated);
+
+      if (localJson === serverJson) return; // 数据一样，不同步
+
+      // 本地有数据但和线上不同
+      // 备份本地数据
+      localStorage.setItem(STORAGE_KEY + '_backup', localJson);
+
+      // 用线上数据覆盖本地
+      currentData = serverMigrated;
+      saveData();
+      renderBoothList();
+      updateStats();
+
+      toast('🔄 已自动同步线上数据（' + serverMigrated.length + '家商家）');
+    })
+    .catch(function(err) {
+      // 网络错误，静默处理，继续用本地数据
+      console.log('自动同步失败：', err.message);
+    });
 }
 
 // ============= 数据加载与兼容 =============
@@ -1294,6 +1356,61 @@ function loadData() {
     currentData = getDefaultData();
     saveData();
   }
+}
+
+// ============= 从线上同步数据 =============
+function syncFromOnline() {
+  var hint = document.getElementById('syncHint');
+  if (hint) hint.style.display = 'block';
+
+  // 加时间戳防止缓存
+  var url = 'assets/data.js?t=' + Date.now();
+
+  fetch(url)
+    .then(function(response) {
+      if (!response.ok) throw new Error('网络错误 ' + response.status);
+      return response.text();
+    })
+    .then(function(text) {
+      var match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*?\])\s*[;\n]/);
+      if (!match) {
+        match = text.match(/window\.BOOTH_DATA\s*=\s*(\[[\s\S]*\])/);
+      }
+      if (match) {
+        var data;
+        try {
+          data = JSON.parse(match[1]);
+        } catch(e) {
+          throw new Error('数据解析失败');
+        }
+        if (Array.isArray(data) && data.length > 0) {
+          currentData = migrateBoothData(data);
+          saveData();
+          renderBoothList();
+          updateStats();
+          if (hint) {
+            hint.style.background = '#e8f5e9';
+            hint.style.borderColor = '#4caf50';
+            hint.style.color = '#2e7d52';
+            hint.innerHTML = '✅ 已同步线上数据（' + data.length + '家商家），本地数据已更新';
+            setTimeout(function() { if (hint) hint.style.display = 'none'; }, 4000);
+          }
+          toast('✅ 同步成功：' + data.length + '家商家');
+          return;
+        }
+      }
+      throw new Error('未找到数据');
+    })
+    .catch(function(err) {
+      if (hint) {
+        hint.style.background = '#ffebe9';
+        hint.style.borderColor = '#cf222e';
+        hint.style.color = '#cf222e';
+        hint.innerHTML = '❌ 同步失败：' + err.message;
+        setTimeout(function() { if (hint) hint.style.display = 'none'; }, 5000);
+      }
+      toast('❌ 同步失败：' + err.message);
+    });
 }
 
 /**
