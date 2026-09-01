@@ -296,11 +296,11 @@
       margin-bottom: 0.5rem;
     }
     .qr-img {
-      width: 100%; aspect-ratio: 1/1;
-      background: var(--bg2); border-radius: 6px;
+      width: 100%; aspect-ratio: 1/1; border-radius: 8px;
+      object-fit: cover;
+      background: var(--bg2); background-size: cover; background-position: center;
       display: flex; align-items: center; justify-content: center;
       font-size: 2rem; margin-bottom: 0.45rem;
-      background-size: cover; background-position: center;
     }
     .qr-label { font-size: 0.68rem; color: var(--muted); font-weight: 400; line-height: 1.4; }
     .qr-wechat-only .qr-item { flex: 0 0 auto; width: 60%; margin: 0 auto; }
@@ -519,9 +519,107 @@
     .bg-service { background: linear-gradient(135deg, #e0ebf5, #9bbde0); }
     .bg-general { background: linear-gradient(135deg, #f0ebe1, #c9bfab); }
     .bg-digital { background: linear-gradient(135deg, #e8e0f0, #b39dd0); }
+
+    /* ---- Promo Stream ---- */
+    .promo-stream {
+      overflow: hidden;
+      background: linear-gradient(135deg, #fff7e6 0%, #ffefc4 100%);
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .promo-track {
+      display: flex;
+      gap: 0.8rem;
+      white-space: nowrap;
+      animation: promoScroll 30s linear infinite;
+      width: max-content;
+    }
+    .promo-track:hover {
+      animation-play-state: paused;
+    }
+    @keyframes promoScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .promo-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #fff;
+      border-radius: 8px;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid #f0d860;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+    .promo-card .promo-emoji { font-size: 1rem; }
+    .promo-card .promo-text { color: var(--ink); }
+    .promo-card .promo-price { color: var(--accent); font-weight: 700; }
+
+    /* ---- Booth Contact ---- */
+    .booth-contact {
+      display: flex; flex-direction: column; gap: 0.15rem;
+      padding-top: 0.3rem; border-top: 1px solid var(--rule);
+      font-size: 0.72rem; color: var(--muted);
+    }
+    .booth-contact .booth-phone {
+      color: var(--accent); font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* ---- Extra Images Grid ---- */
+    .extra-img-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem;
+    }
+    .extra-img-item {
+      aspect-ratio: 1; border-radius: 8px;
+      background-size: cover; background-position: center;
+      background-color: var(--bg2);
+    }
+
+    /* ---- Audio Control ---- */
+    .audio-control {
+      position: fixed; top: 0.5rem; right: 0.5rem; z-index: 60;
+    }
+    .audio-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: none; background: rgba(255,255,255,0.9);
+      font-size: 1.1rem; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s;
+    }
+    .audio-btn:active { transform: scale(0.9); }
+    .audio-btn.muted { opacity: 0.5; }
+
+    /* ---- Image Viewer ---- */
+    .img-viewer {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.9);
+      display: none; align-items: center; justify-content: center;
+    }
+    .img-viewer.show { display: flex; }
+    .img-viewer img {
+      max-width: 95%; max-height: 90vh; border-radius: 8px;
+    }
+    .img-viewer-close {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; cursor: pointer;
+    }
   </style>
 </head>
 <body>
+
+  <!-- 欢迎语音+背景音乐 -->
+  <div class="audio-control" id="audioControl">
+    <button class="audio-btn playing" id="audioBtn" onclick="toggleAudio()">🔊</button>
+  </div>
+  <audio id="bgMusic" loop>
+    <!-- 背景音乐暂时留空，后续可填入音乐URL -->
+  </audio>
 
   <!-- Top Bar -->
   <header class="topbar">
@@ -544,6 +642,11 @@
       <div class="stat"><div class="num">6大</div><div class="lbl">品类专区</div></div>
     </div>
   </section>
+
+  <!-- 推广信息流 -->
+  <div class="promo-stream">
+    <div class="promo-track" id="promoTrack"></div>
+  </div>
 
   <!-- Category Bar -->
   <nav class="cat-bar" id="catBar">
@@ -584,6 +687,12 @@
     </div>
   </div>
 
+  <!-- 图片查看器 -->
+  <div class="img-viewer" id="imgViewer" onclick="closeImageViewer()">
+    <div class="img-viewer-close">✕</div>
+    <img id="imgViewerImg" src="" alt="" />
+  </div>
+
   <!-- Bottom Bar -->
   <nav class="bottom-bar">
     <div class="bb-item active" onclick="scrollToTop()">
@@ -603,6 +712,10 @@
       <span>联系主办方</span>
     </div>
   </nav>
+
+  <div style="text-align:center; padding:0.8rem 0 1rem; font-size:0.65rem; color:var(--muted);">
+    第五届茂交会·云上展厅 v2.0
+  </div>
 
   <!-- Share Hint -->
   <div class="share-hint" id="shareHint">
@@ -984,6 +1097,34 @@ function applySiteConfig() {
 // 执行配置应用
 try { applySiteConfig(); } catch(e) { console.warn('站点配置应用失败:', e); }
 
+// ============= 推广信息流 =============
+function renderPromoStream() {
+  var track = document.getElementById('promoTrack');
+  if (!track) return;
+  var promos = [];
+  booths.forEach(function(b) {
+    (b.products || []).forEach(function(p) {
+      promos.push({
+        emoji: p.emoji || '🎁',
+        name: p.name || '',
+        price: p.price || '',
+        boothName: b.name || '',
+        boothId: b.id
+      });
+    });
+  });
+  // 如果产品太少，复制一遍保证滚动效果
+  var html = promos.map(function(p) {
+    return '<div class="promo-card" onclick="showDetail(' + p.boothId + ')">' +
+      '<span class="promo-emoji">' + p.emoji + '</span>' +
+      '<span class="promo-text">' + p.name + '</span>' +
+      '<span class="promo-price">' + p.price + '</span>' +
+      '</div>';
+  }).join('');
+  // 复制一份用于无缝滚动
+  track.innerHTML = html + html;
+}
+
 // ============= 渲染展位卡片 =============
 function renderBooths(cat) {
   const grid = document.getElementById('boothGrid');
@@ -992,6 +1133,10 @@ function renderBooths(cat) {
   grid.innerHTML = list.map(b => {
     const imgStyle = b.photo ? ' style="background-image:url(\'' + b.photo + '\')"' : '';
     const placeholder = b.photo ? '' : '<div class="img-placeholder"><span class="ph-icon">📷</span><span class="ph-text">暂无图片</span></div>';
+    var contactHtml = '';
+    if (b.contactName && b.phone) {
+      contactHtml += '<div class="booth-contact"><span>👤 ' + b.contactName + '</span><a href="tel:' + b.phone + '" class="booth-phone" onclick="event.stopPropagation()">📞 ' + b.phone + '</a></div>';
+    }
     return `
     <div class="booth-card" onclick="showDetail(${b.id})">
       <div class="booth-img"${imgStyle}>
@@ -1002,6 +1147,7 @@ function renderBooths(cat) {
       <div class="booth-info">
         <div class="booth-name">${b.name}</div>
         <div class="booth-desc">${b.desc}</div>
+        ${contactHtml}
       </div>
     </div>
   `}).join('');
@@ -1009,12 +1155,13 @@ function renderBooths(cat) {
 
 // ============= 分类切换 =============
 document.getElementById('catBar').addEventListener('click', function(e) {
-  if (e.target.classList.contains('cat-chip')) {
-    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
-    e.target.classList.add('active');
-    renderBooths(e.target.dataset.cat);
-    window.scrollTo({ top: 180, behavior: 'smooth' });
-  }
+  var chip = e.target.closest('.cat-chip');
+  if (!chip) return;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  renderBooths(chip.dataset.cat);
+  var gridTop = document.getElementById('boothGrid').getBoundingClientRect().top + window.scrollY - 100;
+  window.scrollTo({ top: gridTop, behavior: 'smooth' });
 });
 
 // ============= 详情弹窗 =============
@@ -1068,8 +1215,8 @@ function showDetail(id) {
     qrItemsHtml += `
       <div class="qr-item">
         <div class="qr-title">扫码加微信</div>
-        <div class="qr-img" style="background-image:url('${wechatQr}')"></div>
-        <div class="qr-label">长按识别或截图保存<br/>添加商家微信咨询</div>
+        <img class="qr-img" src="${wechatQr}" alt="微信二维码" />
+        <div class="qr-label">长按二维码识别<br/>添加商家微信咨询</div>
       </div>`;
   } else if (wechatId) {
     qrItemsHtml += `
@@ -1086,8 +1233,8 @@ function showDetail(id) {
     qrItemsHtml += `
       <div class="qr-item">
         <div class="qr-title">扫码付款</div>
-        <div class="qr-img" style="background-image:url('${payQr}')"></div>
-        <div class="qr-label">长按识别或截图保存<br/>向商家付款</div>
+        <img class="qr-img" src="${payQr}" alt="收款码" />
+        <div class="qr-label">长按二维码识别<br/>向商家付款</div>
       </div>`;
   }
   const qrSectionClass = (hasWechatQr || wechatId) && !hasPayQr ? ' qr-wechat-only' : '';
@@ -1274,6 +1421,19 @@ function openProductDetail(boothId, pIdx) {
     specsHtml = '<p style="font-size:0.82rem;color:var(--muted);">暂无规格参数</p>';
   }
 
+  // 产品展示图片（额外图片，最多10张）
+  var extraImages = (p.extraImages && p.extraImages.length > 0) ? p.extraImages : [];
+  var extraGalleryHtml = '';
+  if (extraImages.length > 0) {
+    extraGalleryHtml = '<div class="product-section">' +
+      '<h4>产品展示</h4>' +
+      '<div class="extra-img-grid">' +
+      extraImages.map(function(img, i) {
+        return '<div class="extra-img-item" style="background-image:url(\'' + img + '\')" onclick="openImageViewer(\'' + img.replace(/'/g, "\\'") + '\')"></div>';
+      }).join('') +
+      '</div></div>';
+  }
+
   // 商品详情
   const detailText = p.detail || '暂无详细介绍';
 
@@ -1310,6 +1470,7 @@ function openProductDetail(boothId, pIdx) {
         <h4>规格参数</h4>
         ${specsHtml}
       </div>
+      ${extraGalleryHtml}
     </div>
     <div class="product-bottom-bar">
       <div class="pbb-price">
@@ -1330,8 +1491,8 @@ function openProductDetail(boothId, pIdx) {
         ${wechatQr ? `
           <div style="flex:1;text-align:center;">
             <div style="font-size:0.78rem;font-weight:600;margin-bottom:0.5rem;">扫码加微信</div>
-            <div style="width:100%;aspect-ratio:1/1;background:var(--bg2);border-radius:6px;background-size:cover;background-position:center;background-image:url('${wechatQr}');"></div>
-            <div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;">长按识别或截图保存</div>
+            <img style="width:100%;aspect-ratio:1/1;border-radius:6px;object-fit:cover;" src="${wechatQr}" alt="微信二维码" />
+            <div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;">长按二维码识别</div>
           </div>
         ` : `
           <div style="flex:1;text-align:center;">
@@ -1346,8 +1507,8 @@ function openProductDetail(boothId, pIdx) {
         ${b.payQr ? `
           <div style="flex:1;text-align:center;">
             <div style="font-size:0.78rem;font-weight:600;margin-bottom:0.5rem;">扫码付款</div>
-            <div style="width:100%;aspect-ratio:1/1;background:var(--bg2);border-radius:6px;background-size:cover;background-position:center;background-image:url('${b.payQr}');"></div>
-            <div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;">长按识别或截图保存</div>
+            <img style="width:100%;aspect-ratio:1/1;border-radius:6px;object-fit:cover;" src="${b.payQr}" alt="收款码" />
+            <div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;">长按二维码识别</div>
           </div>
         ` : ''}
       </div>
@@ -1363,6 +1524,11 @@ function openProductDetail(boothId, pIdx) {
 
   // 添加触摸滑动支持
   initGallerySwipe();
+
+  // 自动轮播
+  if (images.length > 1) {
+    startGalleryAutoPlay();
+  }
 }
 
 // 产品详情轮播
@@ -1404,6 +1570,7 @@ function initGallerySwipe() {
   let endX = 0;
   gallery.addEventListener('touchstart', function(e) {
     startX = e.touches[0].clientX;
+    stopGalleryAutoPlay();
   }, { passive: true });
   gallery.addEventListener('touchend', function(e) {
     endX = e.changedTouches[0].clientX;
@@ -1415,7 +1582,30 @@ function initGallerySwipe() {
         galleryPrev();
       }
     }
+    if (window._galleryImages && window._galleryImages.length > 1) {
+      startGalleryAutoPlay();
+    }
   }, { passive: true });
+}
+
+// ============= 产品图片自动轮播 =============
+var _galleryAutoTimer = null;
+function startGalleryAutoPlay() {
+  stopGalleryAutoPlay();
+  _galleryAutoTimer = setInterval(function() {
+    var images = window._galleryImages;
+    if (!images || images.length <= 1) return;
+    // 只在产品详情弹窗可见时播放
+    var pm = document.getElementById('productModal');
+    if (!pm || !pm.classList.contains('show')) return;
+    galleryNext();
+  }, 3000);
+}
+function stopGalleryAutoPlay() {
+  if (_galleryAutoTimer) {
+    clearInterval(_galleryAutoTimer);
+    _galleryAutoTimer = null;
+  }
 }
 
 // 产品详情页显示微信二维码弹层
@@ -1431,6 +1621,7 @@ function hideProductQrPopup() {
 
 function closeProductModal() {
   document.getElementById('productModal').classList.remove('show');
+  stopGalleryAutoPlay();
 }
 
 // 产品modal点击遮罩关闭
@@ -1500,7 +1691,79 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// ============= 图片查看器 =============
+function openImageViewer(src) {
+  var viewer = document.getElementById('imgViewer');
+  var img = document.getElementById('imgViewerImg');
+  if (viewer && img) {
+    img.src = src;
+    viewer.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeImageViewer() {
+  var viewer = document.getElementById('imgViewer');
+  if (viewer) {
+    viewer.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+// ============= 欢迎语音+背景音乐 =============
+var _audioEnabled = true;
+var _welcomeSpeech = null;
+var _bgMusic = null;
+
+function initAudio() {
+  _bgMusic = document.getElementById('bgMusic');
+  // 尝试播放背景音乐
+  if (_bgMusic) {
+    _bgMusic.volume = 0.3;
+    _bgMusic.play().catch(function(e) {
+      // 浏览器自动播放策略，需要用户交互后才能播放
+      console.log('等待用户交互后播放音乐');
+    });
+  }
+  // 欢迎语音 - 使用 SpeechSynthesis API
+  if (_audioEnabled && 'speechSynthesis' in window) {
+    setTimeout(function() {
+      var utterance = new SpeechSynthesisUtterance('欢迎来到东莞茂商第五届茂交会');
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      speechSynthesis.speak(utterance);
+    }, 500);
+  }
+  // 用户首次交互后启动音乐
+  document.addEventListener('click', function oncePlay() {
+    if (_bgMusic && _audioEnabled) {
+      _bgMusic.play().catch(function(){});
+    }
+    document.removeEventListener('click', oncePlay);
+  }, { once: true });
+}
+
+function toggleAudio() {
+  var btn = document.getElementById('audioBtn');
+  _audioEnabled = !_audioEnabled;
+  if (_audioEnabled) {
+    btn.classList.remove('muted');
+    btn.textContent = '🔊';
+    if (_bgMusic) _bgMusic.play().catch(function(){});
+    if ('speechSynthesis' in window) speechSynthesis.resume();
+  } else {
+    btn.classList.add('muted');
+    btn.textContent = '🔇';
+    if (_bgMusic) _bgMusic.pause();
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+  }
+}
+
+// 初始化音频
+try { initAudio(); } catch(e) { console.warn('音频初始化失败:', e); }
+
 // ============= 初始化 =============
+renderPromoStream();
 renderBooths('all');
 </script>
 </body>

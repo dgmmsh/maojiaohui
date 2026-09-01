@@ -188,7 +188,7 @@
     .booth-item .b-info { flex: 1; min-width: 0; }
     .booth-item .b-name { font-size: 0.88rem; font-weight: 600; }
     .booth-item .b-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
-    .booth-item .b-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
+    .booth-item .b-actions { display: flex; flex-wrap: wrap; gap: 0.25rem; flex-shrink: 0; }
     .icon-btn {
       width: 30px; height: 30px; border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
@@ -469,6 +469,74 @@
     .product-img-add .plus {
       font-size: 1.2rem;
       line-height: 1;
+    }
+
+    /* 产品展示图片网格 */
+    .upload-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+    .upload-wrap {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg2);
+      border: 1px solid var(--rule);
+    }
+    .upload-preview {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .upload-remove {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: none;
+      font-size: 0.7rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .upload-wrap.upload-add {
+      border: 1px dashed var(--rule);
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.7rem;
+    }
+    .upload-wrap.upload-add:active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .upload-add-icon {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+    .upload-add-text {
+      font-size: 0.7rem;
+    }
+    .hint-text {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
     }
 
     /* 规格参数 */
@@ -1255,6 +1323,9 @@ function migrateBoothData(data) {
         if (!prod.specs || !Array.isArray(prod.specs)) {
           prod.specs = [];
         }
+        if (!prod.extraImages || !Array.isArray(prod.extraImages)) {
+          prod.extraImages = [];
+        }
         return prod;
       });
     } else {
@@ -1317,6 +1388,9 @@ function renderBoothList() {
     var photoHtml = b.photo
       ? '<img class="b-photo" src="' + b.photo + '" alt="" />'
       : '<div class="b-emoji">' + (b.emoji || '🏪') + '</div>';
+    var idx = currentData.indexOf(b);
+    var isFirst = idx === 0;
+    var isLast = idx === currentData.length - 1;
     return `
     <div class="booth-item">
       ${photoHtml}
@@ -1325,6 +1399,8 @@ function renderBoothList() {
         <div class="b-meta">${b.no || ''} · ${b.catName || b.cat || ''} · ${(b.products||[]).length}个产品</div>
       </div>
       <div class="b-actions">
+        <button class="icon-btn" onclick="moveBooth(${b.id}, -1)" title="上移" ${isFirst ? 'disabled style="opacity:0.3;"' : ''}>⬆️</button>
+        <button class="icon-btn" onclick="moveBooth(${b.id}, 1)" title="下移" ${isLast ? 'disabled style="opacity:0.3;"' : ''}>⬇️</button>
         <button class="icon-btn edit" onclick="openEditModal(${b.id})" title="编辑">✏️</button>
         <button class="icon-btn del" onclick="deleteBooth(${b.id})" title="删除">🗑️</button>
       </div>
@@ -1332,10 +1408,24 @@ function renderBoothList() {
   `}).join('');
 }
 
+function moveBooth(id, direction) {
+  var idx = currentData.findIndex(function(b) { return b.id === id; });
+  if (idx < 0) return;
+  var newIdx = idx + direction;
+  if (newIdx < 0 || newIdx >= currentData.length) return;
+  // 交换位置
+  var temp = currentData[idx];
+  currentData[idx] = currentData[newIdx];
+  currentData[newIdx] = temp;
+  saveData();
+  renderBoothList();
+  toast('已' + (direction > 0 ? '下移' : '上移') + ' 「' + temp.name + '」');
+}
+
 // ============= 新增/编辑弹窗 =============
 function openAddModal() {
   editingId = null;
-  editingProducts = [{ name: '', desc: '', price: '', unit: '', emoji: '🎁', images: [], detail: '', specs: [] }];
+  editingProducts = [{ name: '', desc: '', price: '', unit: '', emoji: '🎁', images: [], detail: '', specs: [], extraImages: [] }];
   editingPhoto = '';
   editingWechatQr = '';
   editingPayQr = '';
@@ -1374,6 +1464,7 @@ function openEditModal(id) {
     if (!p.images || !Array.isArray(p.images)) p.images = [];
     if (!p.detail) p.detail = '';
     if (!p.specs || !Array.isArray(p.specs)) p.specs = [];
+    if (!p.extraImages || !Array.isArray(p.extraImages)) p.extraImages = [];
   });
   editingPhoto = booth.photo || '';
   editingWechatQr = booth.wechatQr || '';
@@ -1650,7 +1741,7 @@ function renderProductList() {
         '<button class="img-del" onclick="removeProductImg(' + i + ',' + j + ')">✕</button>' +
       '</div>';
     }).join('');
-    var canAdd = (p.images || []).length < 3;
+    var canAdd = (p.images || []).length < 10;
     if (canAdd) {
       imgsHtml += '<div class="product-img-add" onclick="addProductImg(' + i + ')">' +
         '<span class="plus">+</span>' +
@@ -1695,7 +1786,7 @@ function renderProductList() {
         </div>
       </div>
       <div class="form-group">
-        <label>产品图片（最多3张）</label>
+        <label>产品图片（最多10张）</label>
         <div class="product-imgs">
           ${imgsHtml}
         </div>
@@ -1724,12 +1815,26 @@ function renderProductList() {
         </div>
         <button type="button" class="specs-add-btn" onclick="addProductSpec(${i})">+ 添加规格参数</button>
       </div>
+      <div class="form-group">
+        <label>产品展示图片（最多10张）</label>
+        <div class="upload-grid" id="extraImgGrid_${i}">
+        </div>
+        <div class="upload-wrap upload-add" onclick="addExtraImg(${i})">
+          <div class="upload-add-icon">+</div>
+          <div class="upload-add-text">添加展示图</div>
+        </div>
+        <p class="hint-text">展示在产品详情页规格参数下方，可添加产品细节图、实拍图等</p>
+      </div>
     </div>
   `;}).join('');
+  // 渲染展示图片
+  editingProducts.forEach(function(p, i) {
+    renderExtraImgs(i);
+  });
 }
 
 function addProduct() {
-  editingProducts.push({ name: '', desc: '', price: '', unit: '', emoji: '🎁', images: [], detail: '', specs: [] });
+  editingProducts.push({ name: '', desc: '', price: '', unit: '', emoji: '🎁', images: [], detail: '', specs: [], extraImages: [] });
   renderProductList();
   var h4 = document.querySelector('.product-editor h4');
   if (h4) h4.innerHTML = '产品列表（' + editingProducts.length + '个） <button class="btn btn-sm btn-outline" onclick="addProduct()" style="font-size:0.72rem;">+ 添加产品</button>';
@@ -1767,8 +1872,8 @@ function onCatChange(catKey) {
 
 // ---- 产品图片操作 ----
 function addProductImg(productIdx) {
-  if ((editingProducts[productIdx].images || []).length >= 3) {
-    toast('最多3张图片');
+  if ((editingProducts[productIdx].images || []).length >= 10) {
+    toast('最多10张图片');
     return;
   }
   openImgOption({
@@ -1788,6 +1893,44 @@ function removeProductImg(productIdx, imgIdx) {
   if (!confirm('确定删除这张图片吗？')) return;
   editingProducts[productIdx].images.splice(imgIdx, 1);
   renderProductList();
+}
+
+// ---- 产品展示图片操作 ----
+function addExtraImg(pIdx) {
+  openImgOption({
+    maxWidth: 800,
+    quality: 0.75,
+    callback: function(base64) {
+      if (!editingProducts[pIdx].extraImages) {
+        editingProducts[pIdx].extraImages = [];
+      }
+      if (editingProducts[pIdx].extraImages.length >= 10) {
+        toast('最多只能上传10张展示图片');
+        return;
+      }
+      editingProducts[pIdx].extraImages.push(base64);
+      renderExtraImgs(pIdx);
+      toast('✅ 展示图添加成功');
+    }
+  });
+}
+
+function removeExtraImg(pIdx, imgIdx) {
+  if (!editingProducts[pIdx].extraImages) return;
+  editingProducts[pIdx].extraImages.splice(imgIdx, 1);
+  renderExtraImgs(pIdx);
+}
+
+function renderExtraImgs(pIdx) {
+  var grid = document.getElementById('extraImgGrid_' + pIdx);
+  if (!grid) return;
+  var imgs = editingProducts[pIdx].extraImages || [];
+  grid.innerHTML = imgs.map(function(img, i) {
+    return '<div class="upload-wrap">' +
+      '<div class="upload-preview" style="background-image:url(\'' + img + '\')"></div>' +
+      '<div class="upload-remove" onclick="removeExtraImg(' + pIdx + ',' + i + ')">×</div>' +
+    '</div>';
+  }).join('');
 }
 
 // ---- 产品规格参数操作 ----
