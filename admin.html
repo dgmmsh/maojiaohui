@@ -926,6 +926,10 @@
       background: rgba(0,0,0,0.6); color: #fff;
       font-size: 0.6rem; padding: 1px 5px; border-radius: 8px;
     }
+    .wall-upload-btns {
+      display: flex; gap: 0.5rem; margin-top: 0.5rem;
+    }
+    .wall-upload-btns .btn { flex: 1; }
   </style>
 </head>
 <body>
@@ -1470,22 +1474,26 @@ function handleSyncData(text, showHint) {
 
   // 同时提取 WALL_DATA
   var serverWall = extractWallData(text);
+  var wallAdded = 0;
+  var wallUpdatedImgs = 0;
   if (serverWall && serverWall.length > 0) {
     loadWallData();
-    var wallChanged = mergeWallData(wallData, serverWall);
-    if (wallChanged > 0) saveWallData();
+    var wallResult = mergeWallData(wallData, serverWall);
+    wallAdded = wallResult.added;
+    wallUpdatedImgs = wallResult.updatedImgs;
+    if (wallAdded > 0 || wallUpdatedImgs > 0) saveWallData();
   }
 
   var serverMigrated = migrateBoothData(serverData);
   var result = mergeBoothData(currentData, serverMigrated);
 
-  if (result.added === 0 && result.updated === 0) {
+  if (result.added === 0 && result.updated === 0 && wallAdded === 0 && wallUpdatedImgs === 0) {
     var hint = document.getElementById('syncHint');
     if (showHint && hint) {
       hint.style.background = '#e8f5e9';
       hint.style.borderColor = '#4caf50';
       hint.style.color = '#2e7d52';
-      hint.innerHTML = '✅ 线上数据已是最新（' + currentData.length + '家商家）';
+      hint.innerHTML = '✅ 线上数据已是最新（' + currentData.length + '家商家，' + wallData.length + '条风采）';
       setTimeout(function() { if (hint) hint.style.display = 'none'; }, 3000);
     }
     return;
@@ -1496,9 +1504,11 @@ function handleSyncData(text, showHint) {
   renderBoothList();
   updateStats();
 
-  var msg = '✅ 同步完成（当前' + currentData.length + '家商家';
+  var msg = '✅ 同步完成（' + currentData.length + '家商家，' + wallData.length + '条风采';
   if (result.added > 0) msg += '，新增' + result.added + '家';
   if (result.updated > 0) msg += '，更新' + result.updated + '家';
+  if (wallAdded > 0) msg += '，风采新增' + wallAdded + '条';
+  if (wallUpdatedImgs > 0) msg += '，风采图片新增' + wallUpdatedImgs + '张';
   msg += '）';
 
   var hint = document.getElementById('syncHint');
@@ -1537,15 +1547,39 @@ function extractWallData(text) {
 // 合并 WALL_DATA（只增不删）
 function mergeWallData(localArr, serverArr) {
   var added = 0;
-  var localIds = {};
-  localArr.forEach(function(w) { localIds[w.id] = true; });
+  var updated = 0;
+  var localMap = {};
+  localArr.forEach(function(w) { localMap[w.id] = w; });
   serverArr.forEach(function(srv) {
-    if (!localIds[srv.id]) {
+    var local = localMap[srv.id];
+    if (!local) {
+      // 新条目，直接添加
       localArr.push(srv);
       added++;
+    } else {
+      // 已有条目：合并图片（只增不删）
+      var localImgs = local.images || (local.image ? [local.image] : []);
+      var serverImgs = srv.images || (srv.image ? [srv.image] : []);
+      var imgSet = {};
+      localImgs.forEach(function(img) { imgSet[img] = true; });
+      var newImgs = localImgs.slice();
+      serverImgs.forEach(function(img) {
+        if (!imgSet[img]) {
+          newImgs.push(img);
+          updated++;
+        }
+      });
+      if (newImgs.length > localImgs.length) {
+        local.images = newImgs;
+      }
+      // 同步标题、描述等字段（如果服务器版本更新）
+      if (srv.title && srv.title !== local.title) local.title = srv.title;
+      if (srv.desc && srv.desc !== local.desc) local.desc = srv.desc;
+      if (srv.author && srv.author !== local.author) local.author = srv.author;
+      if (srv.date && srv.date !== local.date) local.date = srv.date;
     }
   });
-  return added;
+  return { added: added, updatedImgs: updated };
 }
 
 // 从 data.js 文本中提取 BOOTH_DATA 数组（括号计数法）
@@ -1737,11 +1771,13 @@ function generateWallFormHTML(w) {
     '<div class="form-group">' +
       '<label>照片（可上传多张，不限数量）</label>' +
       '<div class="wall-thumbs" id="wallThumbs">' + thumbsHtml + '</div>' +
-      '<div class="upload-wrap" style="margin-top:0.5rem;">' +
-        '<input type="file" class="upload-input" accept="image/*" capture="environment" multiple onchange="addWallImages(event)">' +
-        '<div class="upload-btn">📷 上传/拍照（可多选）</div>' +
+      '<div class="wall-upload-btns">' +
+        '<button type="button" class="btn btn-sm btn-primary" onclick="wallPickCamera()">📷 现场拍照</button>' +
+        '<button type="button" class="btn btn-sm btn-outline" onclick="wallPickAlbum()">🖼️ 相册选择</button>' +
       '</div>' +
-      '<p class="hint-text">支持相册多选或现场拍照，可无限添加</p>' +
+      '<input type="file" id="wallFileCamera" accept="image/*" capture="environment" style="display:none" onchange="addWallImages(event)">' +
+      '<input type="file" id="wallFileAlbum" accept="image/*" multiple style="display:none" onchange="addWallImages(event)">' +
+      '<p class="hint-text">支持现场拍照或相册多选，可无限添加</p>' +
     '</div>' +
     '<div class="form-group">' +
       '<label>发布者</label>' +
@@ -1758,9 +1794,25 @@ function generateWallFormHTML(w) {
   '</div>';
 }
 
+function wallPickCamera() {
+  var input = document.getElementById('wallFileCamera');
+  if (!input) return;
+  input.value = '';
+  input.click();
+}
+
+function wallPickAlbum() {
+  var input = document.getElementById('wallFileAlbum');
+  if (!input) return;
+  input.value = '';
+  input.click();
+}
+
 function addWallImages(event) {
   var files = event.target.files;
   if (!files || files.length === 0) return;
+
+  toast('正在处理' + files.length + '张图片...');
 
   var remaining = files.length;
   for (var i = 0; i < files.length; i++) {
@@ -1773,6 +1825,7 @@ function addWallImages(event) {
         remaining--;
         if (remaining === 0) {
           renderWallThumbs();
+          toast('✅ 已添加' + files.length + '张照片');
         }
       });
     })(files[i]);
