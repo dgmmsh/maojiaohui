@@ -886,6 +886,46 @@
       color: var(--warn-text);
       font-size: 0.76rem;
     }
+
+    /* ---- 现场风采多图上传 ---- */
+    .wall-thumbs {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+      gap: 0.5rem; margin-bottom: 0.3rem;
+    }
+    .wall-thumb {
+      position: relative; width: 100%; aspect-ratio: 1/1;
+      border-radius: 6px; overflow: hidden; border: 1px solid var(--rule);
+    }
+    .wall-thumb img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .wall-thumb-del {
+      position: absolute; top: 2px; right: 2px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(0,0,0,0.6); color: #fff;
+      font-size: 0.65rem; display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .wall-thumb-del:active { background: rgba(220,53,69,0.85); }
+
+    .booth-left { display: flex; align-items: center; gap: 0.6rem; flex: 1; min-width: 0; }
+    .booth-img {
+      width: 52px; height: 52px; border-radius: 8px; flex-shrink: 0;
+      background-size: cover; background-position: center; background-color: var(--bg2);
+      position: relative; display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .booth-img.bg-general { background: var(--bg2); }
+    .booth-info { flex: 1; min-width: 0; }
+    .booth-name { font-size: 0.85rem; font-weight: 600; }
+    .booth-desc { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+    .booth-meta { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
+    .booth-actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
+    .img-count {
+      position: absolute; bottom: 2px; right: 2px;
+      background: rgba(0,0,0,0.6); color: #fff;
+      font-size: 0.6rem; padding: 1px 5px; border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -1594,9 +1634,13 @@ function loadWallData() {
     wallData = window.WALL_DATA || [];
     saveWallData();
   }
-  // 确保每个条目有 id
+  // 确保每个条目有 id 和 images 数组
   wallData.forEach(function(w) {
     if (!w.id) w.id = Date.now() + Math.random();
+    // 兼容旧 image 字段，转为 images 数组
+    if (!w.images) {
+      w.images = w.image ? [w.image] : [];
+    }
   });
 }
 
@@ -1615,8 +1659,13 @@ function renderWallList() {
   }
 
   list.innerHTML = wallData.map(function(w) {
-    var imgHtml = w.image
-      ? '<div class="booth-img" style="background-image:url(' + w.image + ')"></div>'
+    // 兼容 images 数组和旧 image 字段
+    var imgs = (w.images && w.images.length > 0) ? w.images : (w.image ? [w.image] : []);
+    var firstImg = imgs.length > 0 ? imgs[0] : '';
+    var imgHtml = firstImg
+      ? '<div class="booth-img" style="background-image:url(' + firstImg + ')">' +
+          (imgs.length > 1 ? '<span class="img-count">📷 ' + imgs.length + '</span>' : '') +
+        '</div>'
       : '<div class="booth-img bg-general"><span>📸</span></div>';
     return '<div class="booth-item">' +
       '<div class="booth-left">' +
@@ -1651,7 +1700,27 @@ function openWallEdit(id) {
   showModal(html);
 }
 
+var _wallImages = []; // 临时存储当前编辑的多张图片
+
 function generateWallFormHTML(w) {
+  // 兼容旧数据：image字段转为images数组
+  _wallImages = [];
+  if (w.images && w.images.length > 0) {
+    _wallImages = w.images.slice();
+  } else if (w.image) {
+    _wallImages = [w.image];
+  }
+
+  var thumbsHtml = '';
+  if (_wallImages.length > 0) {
+    thumbsHtml = _wallImages.map(function(src, i) {
+      return '<div class="wall-thumb" data-idx="' + i + '">' +
+        '<img src="' + src + '" alt="照片' + (i+1) + '" />' +
+        '<div class="wall-thumb-del" onclick="removeWallImage(' + i + ')">✕</div>' +
+      '</div>';
+    }).join('');
+  }
+
   return '<div class="modal-header">' +
     '<h3>' + (editingWallId ? '编辑风采' : '新增风采') + '</h3>' +
     '<button class="modal-close" onclick="closeModal()">✕</button>' +
@@ -1666,15 +1735,13 @@ function generateWallFormHTML(w) {
       '<textarea id="wallDesc" rows="3" placeholder="活动描述...">' + escapeHtml(w.desc || '') + '</textarea>' +
     '</div>' +
     '<div class="form-group">' +
-      '<label>照片</label>' +
-      '<div class="upload-wrap">' +
-        '<div class="upload-preview" id="wallPhotoPreview" style="' + (w.image ? 'background-image:url(' + w.image + ')' : '') + '">' +
-          (!w.image ? '<span style="font-size:2rem;color:#ccc;">📷</span>' : '') +
-        '</div>' +
-        '<input type="file" class="upload-input" accept="image/*" capture="environment" onchange="previewWallImage(event)">' +
-        '<div class="upload-btn">📷 上传/拍照</div>' +
+      '<label>照片（可上传多张，不限数量）</label>' +
+      '<div class="wall-thumbs" id="wallThumbs">' + thumbsHtml + '</div>' +
+      '<div class="upload-wrap" style="margin-top:0.5rem;">' +
+        '<input type="file" class="upload-input" accept="image/*" capture="environment" multiple onchange="addWallImages(event)">' +
+        '<div class="upload-btn">📷 上传/拍照（可多选）</div>' +
       '</div>' +
-      '<p class="hint-text">支持相册选择或现场拍照</p>' +
+      '<p class="hint-text">支持相册多选或现场拍照，可无限添加</p>' +
     '</div>' +
     '<div class="form-group">' +
       '<label>发布者</label>' +
@@ -1691,17 +1758,42 @@ function generateWallFormHTML(w) {
   '</div>';
 }
 
-function previewWallImage(event) {
-  var file = event.target.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    var preview = document.getElementById('wallPhotoPreview');
-    preview.style.backgroundImage = 'url(' + e.target.result + ')';
-    preview.innerHTML = '';
-    preview._imageData = e.target.result;
-  };
-  reader.readAsDataURL(file);
+function addWallImages(event) {
+  var files = event.target.files;
+  if (!files || files.length === 0) return;
+
+  var remaining = files.length;
+  for (var i = 0; i < files.length; i++) {
+    (function(file) {
+      compressImage(file, 1280, 0.7).then(function(dataUrl) {
+        _wallImages.push(dataUrl);
+      }).catch(function(err) {
+        console.error('图片处理失败:', err);
+      }).then(function() {
+        remaining--;
+        if (remaining === 0) {
+          renderWallThumbs();
+        }
+      });
+    })(files[i]);
+  }
+  event.target.value = '';
+}
+
+function renderWallThumbs() {
+  var container = document.getElementById('wallThumbs');
+  if (!container) return;
+  container.innerHTML = _wallImages.map(function(src, i) {
+    return '<div class="wall-thumb" data-idx="' + i + '">' +
+      '<img src="' + src + '" alt="照片' + (i+1) + '" />' +
+      '<div class="wall-thumb-del" onclick="removeWallImage(' + i + ')">✕</div>' +
+    '</div>';
+  }).join('');
+}
+
+function removeWallImage(idx) {
+  _wallImages.splice(idx, 1);
+  renderWallThumbs();
 }
 
 function saveWallItem() {
@@ -1709,8 +1801,6 @@ function saveWallItem() {
   var desc = document.getElementById('wallDesc').value.trim();
   var author = document.getElementById('wallAuthor').value.trim();
   var date = document.getElementById('wallDate').value.trim();
-  var preview = document.getElementById('wallPhotoPreview');
-  var image = (preview && preview._imageData) ? preview._imageData : (preview ? (preview.style.backgroundImage || '').replace(/^url\(|\)$/g, '') : '');
 
   if (!title) { toast('请填写标题'); return; }
 
@@ -1719,7 +1809,7 @@ function saveWallItem() {
     if (w) {
       w.title = title;
       w.desc = desc;
-      w.image = image;
+      w.images = _wallImages.slice();
       w.author = author;
       w.date = date;
     }
@@ -1729,7 +1819,7 @@ function saveWallItem() {
       id: Date.now(),
       title: title,
       desc: desc,
-      image: image,
+      images: _wallImages.slice(),
       author: author,
       date: date
     });
