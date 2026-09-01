@@ -1,6 +1,6 @@
 // 第五届茂交会 · 云上展厅 全站配置
 // 由后台管理发布，请勿手动修改格式
-// 最后更新：2026/9/1 08:33:10
+// 最后更新：2026/9/1 08:51:15
 
 window.SITE_CONFIG = {
   "siteName": "茂交会云上展厅",
@@ -8,8 +8,8 @@ window.SITE_CONFIG = {
   "themeColor": "#b8362f",
   "themeColor2": "#c2922c",
   "topbar": {
-    "logoText": "茂交会",
-    "title": "东莞茂商第五届茂交会·云上展厅",
+    "logoText": "茂",
+    "title": "第五届茂交会·云上展厅",
     "subtitle": "东莞市茂名商会 · 寻味金秋"
   },
   "hero": {
@@ -20,15 +20,15 @@ window.SITE_CONFIG = {
     "stats": [
       {
         "num": "21+",
-        "lbl": "参展商家"
+        "label": "参展商家"
       },
       {
         "num": "50+",
-        "lbl": "产品数量"
+        "label": "特色产品"
       },
       {
         "num": "6大",
-        "lbl": "品类"
+        "label": "品类专区"
       }
     ],
     "bgColor1": "#b8362f",
@@ -39,44 +39,43 @@ window.SITE_CONFIG = {
     {
       "key": "all",
       "name": "全部",
-      "emoji": "🏠",
+      "emoji": "🏠"
+    },
+    {
+      "key": "mooncake",
+      "name": "月饼食品",
+      "emoji": "🥮",
       "bg": "bg-mooncake"
     },
     {
-      "key": "cat1",
-      "name": "月饼食品",
-      "emoji": "🥮",
+      "key": "fruit",
+      "name": "水果生鲜",
+      "emoji": "🍊",
       "bg": "bg-fruit"
     },
     {
-      "key": "cat2",
-      "name": "水果生鲜",
-      "emoji": "🍊",
+      "key": "wine",
+      "name": "酒水饮料",
+      "emoji": "🍶",
       "bg": "bg-wine"
     },
     {
-      "key": "cat3",
-      "name": "酒水饮料",
-      "emoji": "🍶",
+      "key": "agarwood",
+      "name": "沉香文化",
+      "emoji": "🪵",
       "bg": "bg-agarwood"
     },
     {
-      "key": "cat4",
-      "name": "沉香文化",
-      "emoji": "🪵",
+      "key": "food",
+      "name": "餐饮美食",
+      "emoji": "🍜",
       "bg": "bg-food"
     },
     {
-      "key": "cat5",
-      "name": "餐饮美食",
-      "emoji": "🍜",
-      "bg": "bg-service"
-    },
-    {
-      "key": "cat6",
+      "key": "service",
       "name": "生活服务",
       "emoji": "☁️",
-      "bg": "bg-general"
+      "bg": "bg-service"
     }
   ],
   "featuredTitle": "精选展位",
@@ -101,13 +100,12 @@ window.SITE_CONFIG = {
     }
   },
   "organizer": {
-    "name": "东莞茂商茂交会主办方",
-    "phone": "15322931015",
-    "address": "东莞市茂名商会",
-    "phone1": "15322931015",
+    "name": "东莞市茂名商会秘书处",
     "contact1": "黄嘉梁",
+    "phone1": "13923740820",
     "contact2": "赖仕平",
-    "phone2": "13925818863"
+    "phone2": "13925818863",
+    "address": "东莞市茂名商会"
   },
   "share": {
     "title": "第五届茂交会云上展厅",
