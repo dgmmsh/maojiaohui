@@ -925,6 +925,7 @@
 
     <div class="tabs">
       <div class="tab active" onclick="switchTab('booth')">🏪 商家管理</div>
+      <div class="tab" onclick="switchTab('wall')">📸 现场风采</div>
       <div class="tab" onclick="switchTab('setting')">⚙️ 站点设置</div>
       <div class="tab" onclick="switchTab('publish')">🚀 发布设置</div>
     </div>
@@ -981,6 +982,17 @@
     </div>
 
     </div><!-- /tabBooth -->
+
+    <!-- ===== 现场风采 Tab ===== -->
+    <div id="tabWall" class="tab-panel">
+      <div class="section-head">
+        <h3>现场风采列表</h3>
+        <div class="actions">
+          <button class="btn btn-sm btn-primary" onclick="openWallAdd()">+ 新增</button>
+        </div>
+      </div>
+      <div id="wallList" class="booth-list"></div>
+    </div><!-- /tabWall -->
 
     <!-- ===== 站点设置 Tab ===== -->
     <div id="tabSetting" class="tab-panel">
@@ -1416,6 +1428,14 @@ function handleSyncData(text, showHint) {
     return;
   }
 
+  // 同时提取 WALL_DATA
+  var serverWall = extractWallData(text);
+  if (serverWall && serverWall.length > 0) {
+    loadWallData();
+    var wallChanged = mergeWallData(wallData, serverWall);
+    if (wallChanged > 0) saveWallData();
+  }
+
   var serverMigrated = migrateBoothData(serverData);
   var result = mergeBoothData(currentData, serverMigrated);
 
@@ -1450,6 +1470,42 @@ function handleSyncData(text, showHint) {
     setTimeout(function() { if (hint) hint.style.display = 'none'; }, 5000);
   }
   toast(msg);
+}
+
+// 从 data.js 文本中提取 WALL_DATA 数组
+function extractWallData(text) {
+  var marker = 'window.WALL_DATA';
+  var idx = text.indexOf(marker);
+  if (idx < 0) return null;
+  var bracketStart = text.indexOf('[', idx);
+  if (bracketStart < 0) return null;
+  var depth = 0;
+  var bracketEnd = -1;
+  for (var i = bracketStart; i < text.length; i++) {
+    if (text[i] === '[') depth++;
+    else if (text[i] === ']') {
+      depth--;
+      if (depth === 0) { bracketEnd = i; break; }
+    }
+  }
+  if (bracketEnd < 0) return null;
+  try {
+    return JSON.parse(text.substring(bracketStart, bracketEnd + 1));
+  } catch(e) { return null; }
+}
+
+// 合并 WALL_DATA（只增不删）
+function mergeWallData(localArr, serverArr) {
+  var added = 0;
+  var localIds = {};
+  localArr.forEach(function(w) { localIds[w.id] = true; });
+  serverArr.forEach(function(srv) {
+    if (!localIds[srv.id]) {
+      localArr.push(srv);
+      added++;
+    }
+  });
+  return added;
 }
 
 // 从 data.js 文本中提取 BOOTH_DATA 数组（括号计数法）
@@ -1519,6 +1575,192 @@ function mergeBoothData(localArr, serverArr) {
   });
 
   return { added: added, updated: updated };
+}
+
+// ============= 现场风采留言板管理 =============
+var WALL_STORAGE_KEY = 'maojiaohui_wall_data';
+var wallData = [];
+var editingWallId = null;
+
+function loadWallData() {
+  var saved = localStorage.getItem(WALL_STORAGE_KEY);
+  if (saved) {
+    try {
+      wallData = JSON.parse(saved);
+    } catch(e) {
+      wallData = window.WALL_DATA || [];
+    }
+  } else {
+    wallData = window.WALL_DATA || [];
+    saveWallData();
+  }
+  // 确保每个条目有 id
+  wallData.forEach(function(w) {
+    if (!w.id) w.id = Date.now() + Math.random();
+  });
+}
+
+function saveWallData() {
+  localStorage.setItem(WALL_STORAGE_KEY, JSON.stringify(wallData));
+}
+
+function renderWallList() {
+  loadWallData();
+  var list = document.getElementById('wallList');
+  if (!list) return;
+
+  if (wallData.length === 0) {
+    list.innerHTML = '<div class="empty-hint">暂无现场风采照片，点「+ 新增」添加</div>';
+    return;
+  }
+
+  list.innerHTML = wallData.map(function(w) {
+    var imgHtml = w.image
+      ? '<div class="booth-img" style="background-image:url(' + w.image + ')"></div>'
+      : '<div class="booth-img bg-general"><span>📸</span></div>';
+    return '<div class="booth-item">' +
+      '<div class="booth-left">' +
+        imgHtml +
+        '<div class="booth-info">' +
+          '<div class="booth-name">' + escapeHtml(w.title) + '</div>' +
+          '<div class="booth-desc">' + escapeHtml((w.desc || '').substring(0, 40)) + '</div>' +
+          '<div class="booth-meta">' + escapeHtml(w.author || '') + ' · ' + escapeHtml(w.date || '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="booth-actions">' +
+        '<button class="btn-icon" onclick="openWallEdit(' + w.id + ')" title="编辑">✏️</button>' +
+        '<button class="btn-icon" onclick="moveWall(' + w.id + ', -1)" title="上移">⬆️</button>' +
+        '<button class="btn-icon" onclick="moveWall(' + w.id + ', 1)" title="下移">⬇️</button>' +
+        '<button class="btn-icon" onclick="deleteWall(' + w.id + ')" title="删除">🗑</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function openWallAdd() {
+  editingWallId = null;
+  var html = generateWallFormHTML({});
+  showModal(html);
+}
+
+function openWallEdit(id) {
+  var w = wallData.find(function(x) { return x.id === id; });
+  if (!w) return;
+  editingWallId = id;
+  var html = generateWallFormHTML(w);
+  showModal(html);
+}
+
+function generateWallFormHTML(w) {
+  return '<div class="modal-header">' +
+    '<h3>' + (editingWallId ? '编辑风采' : '新增风采') + '</h3>' +
+    '<button class="modal-close" onclick="closeModal()">✕</button>' +
+  '</div>' +
+  '<div class="modal-body">' +
+    '<div class="form-group">' +
+      '<label>标题</label>' +
+      '<input type="text" id="wallTitle" value="' + escapeHtml(w.title || '') + '" placeholder="如：茂交会开幕仪式" />' +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label>描述</label>' +
+      '<textarea id="wallDesc" rows="3" placeholder="活动描述...">' + escapeHtml(w.desc || '') + '</textarea>' +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label>照片</label>' +
+      '<div class="upload-wrap">' +
+        '<div class="upload-preview" id="wallPhotoPreview" style="' + (w.image ? 'background-image:url(' + w.image + ')' : '') + '">' +
+          (!w.image ? '<span style="font-size:2rem;color:#ccc;">📷</span>' : '') +
+        '</div>' +
+        '<input type="file" class="upload-input" accept="image/*" capture="environment" onchange="previewWallImage(event)">' +
+        '<div class="upload-btn">📷 上传/拍照</div>' +
+      '</div>' +
+      '<p class="hint-text">支持相册选择或现场拍照</p>' +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label>发布者</label>' +
+      '<input type="text" id="wallAuthor" value="' + escapeHtml(w.author || '') + '" placeholder="如：主办方" />' +
+    '</div>' +
+    '<div class="form-group">' +
+      '<label>日期</label>' +
+      '<input type="date" id="wallDate" value="' + escapeHtml(w.date || '') + '" />' +
+    '</div>' +
+  '</div>' +
+  '<div class="modal-footer">' +
+    '<button class="btn btn-outline" onclick="closeModal()">取消</button>' +
+    '<button class="btn btn-primary" onclick="saveWallItem()">💾 保存</button>' +
+  '</div>';
+}
+
+function previewWallImage(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var preview = document.getElementById('wallPhotoPreview');
+    preview.style.backgroundImage = 'url(' + e.target.result + ')';
+    preview.innerHTML = '';
+    preview._imageData = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveWallItem() {
+  var title = document.getElementById('wallTitle').value.trim();
+  var desc = document.getElementById('wallDesc').value.trim();
+  var author = document.getElementById('wallAuthor').value.trim();
+  var date = document.getElementById('wallDate').value.trim();
+  var preview = document.getElementById('wallPhotoPreview');
+  var image = (preview && preview._imageData) ? preview._imageData : (preview ? (preview.style.backgroundImage || '').replace(/^url\(|\)$/g, '') : '');
+
+  if (!title) { toast('请填写标题'); return; }
+
+  if (editingWallId) {
+    var w = wallData.find(function(x) { return x.id === editingWallId; });
+    if (w) {
+      w.title = title;
+      w.desc = desc;
+      w.image = image;
+      w.author = author;
+      w.date = date;
+    }
+    toast('已保存修改');
+  } else {
+    wallData.unshift({
+      id: Date.now(),
+      title: title,
+      desc: desc,
+      image: image,
+      author: author,
+      date: date
+    });
+    toast('已添加');
+  }
+
+  saveWallData();
+  renderWallList();
+  closeModal();
+}
+
+function deleteWall(id) {
+  var w = wallData.find(function(x) { return x.id === id; });
+  if (!w) return;
+  if (!confirm('确定删除「' + w.title + '」？')) return;
+  wallData = wallData.filter(function(x) { return x.id !== id; });
+  saveWallData();
+  renderWallList();
+  toast('已删除');
+}
+
+function moveWall(id, dir) {
+  var idx = wallData.findIndex(function(x) { return x.id === id; });
+  if (idx < 0) return;
+  var newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= wallData.length) return;
+  var tmp = wallData[idx];
+  wallData[idx] = wallData[newIdx];
+  wallData[newIdx] = tmp;
+  saveWallData();
+  renderWallList();
 }
 
 // ============= 音乐试听 =============
@@ -2443,13 +2685,16 @@ function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(function(t, i) {
     t.classList.toggle('active',
       (i === 0 && tab === 'booth') ||
-      (i === 1 && tab === 'setting') ||
-      (i === 2 && tab === 'publish')
+      (i === 1 && tab === 'wall') ||
+      (i === 2 && tab === 'setting') ||
+      (i === 3 && tab === 'publish')
     );
   });
   document.getElementById('tabBooth').classList.toggle('active', tab === 'booth');
+  document.getElementById('tabWall').classList.toggle('active', tab === 'wall');
   document.getElementById('tabSetting').classList.toggle('active', tab === 'setting');
   document.getElementById('tabPublish').classList.toggle('active', tab === 'publish');
+  if (tab === 'wall') renderWallList();
   if (tab === 'setting') renderSiteSettings();
   if (tab === 'publish') {
     loadGithubConfigToForm();
@@ -3136,6 +3381,8 @@ function publishGithubFile(path, content, message) {
 // 生成 data.js 内容
 function generateDataJsContent() {
   var jsonStr = JSON.stringify(currentData, null, 2);
+  loadWallData();
+  var wallStr = JSON.stringify(wallData, null, 2);
   return `// 第五届茂交会 · 云上展厅数据
 // 由后台管理发布，请勿手动修改格式
 // 最后更新：${new Date().toLocaleString('zh-CN')}
@@ -3152,6 +3399,9 @@ window.CATEGORY_CONFIG = [
   { key: "service", name: "生活服务", emoji: "☁️", bg: "bg-service" },
   { key: "general", name: "综合", emoji: "🏪", bg: "bg-general" }
 ];
+
+// 现场风采留言板数据
+window.WALL_DATA = ${wallStr};
 `;
 }
 
